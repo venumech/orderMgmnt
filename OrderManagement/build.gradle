@@ -1,0 +1,94 @@
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'org.akhikhl.gretty'
+ 
+// JDK 7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+ 
+repositories {
+    mavenLocal()
+    mavenCentral()
+    flatDir {
+       dirs 'lib'
+   }
+}
+ 
+dependencies {
+    compile 'ch.qos.logback:logback-classic:1.1.3'
+    compile 'org.springframework:spring-webmvc:4.1.6.RELEASE'
+    compile 'javax.servlet:jstl:1.2'
+    
+    //new
+    compile 'org.apache.commons:commons-io:1.3.2'
+    compile 'commons-collections:commons-collections:3.2'
+        compile 'com.google.code.gson:gson:2.3.1'
+        compile 'org.apache.commons:commons-lang3:3.4'
+        compile 'commons-fileupload:commons-fileupload:1.3.1'
+        
+      //compile fileTree (dir: 'lib', include: '**/*.jar')
+      //compile fileTree (dir: '/src/main/webapp/WEB-INF/lib', include: '**/*.jar')
+      compile files ('/src/main/webapp/WEB-INF/lib/ojdbc7.jar')
+        compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
+        //compile group: 'com.google.code.gson', name: 'gson', version:'1.4'
+        compile group: 'org.apache.commons', name: 'commons-lang3', version:'3.4'
+        //compile group: 'com.oracle', name: 'ojdbc14', version:'10.2.0.4.0'
+        compile group: 'org.apache.commons', name: 'commons-io', version:'1.3.2'
+ 
+    //include in compile only, exclude in the war
+    providedCompile 'javax.servlet:servlet-api:2.5'
+    //providedCompile 'com.oracle:ojdbc14:10.2.0.4.0'
+}
+ 
+//Gretty Embedded Jetty
+buildscript {
+  repositories {
+    jcenter()
+  }
+ 
+  dependencies {
+    classpath 'org.akhikhl.gretty:gretty:+'
+    classpath 'com.google.code.gson:gson:2.3.1'
+    classpath files('lib/gson-1.4.jar')
+    classpath files('lib/xdb6.jar')
+    //classpath files('lib/ojdbc-14.jar')
+    classpath files('lib/ojdbc7.jar')
+    classpath files('lib/orai18n.jar') 
+  }
+}
+ 
+ task hello(type: GreetingTask)
+ 
+ class GreetingTask extends DefaultTask {
+     @TaskAction
+     def greet() {
+         println 'hello from GreetingTask'
+     }
+}
+
+
+
+// Don't use Jetty8, even it's a servlet 3.0+ container, 
+// It will cause "No Spring WebApplicationInitializer types detected on classpath"
+gretty {
+  port = 9999
+  contextPath = 'venu'
+  servletContainer = 'jetty9' //tomcat7 or tomcat8
+  //servletContainer = 'tomcat7' //tomcat7 or tomcat8
+}
+ 
+//For Eclipse IDE only
+eclipse {
+ 
+  wtp {
+    component {
+ 
+      //define context path, default to project folder name
+      contextPath = 'venu'
+ 
+    }
+ 
+  }
+}
