@@ -109,44 +109,10 @@
                 success: function (data) {
                 //data ='{"id":27336,"from":{"city":"NEW YORK","state":"NY","zip":"10001"},"to":{"city":"WASHINGTON","state":"DC","zip":"20001"},"lines":[{"weight":1000.1,"volume":1.0,"hazard":true,"product":"petrol"},{"weight":2000.0,"volume":2.0,"hazard":false,"product":"water"}],"instructions":"here be dragons"}';
    	
-	   	var output="";
-		if (data.indexOf("ERROR") == 0){
-		   output = data;
-		   alert (data);
-
-                } else {
-                var json_obj = $.parseJSON(data);//parse JSON
-		            output+="<div id='outerBox'>";
-		            output+="<ul id='stretchItems'><li> <font color='blue'><b>Order ID </b></font> "+ json_obj.id +"</li>";
-		            output+= "<li> <font color='blue'><b>From: </b></font><ul>";
-		            output+= "<li> City: " + json_obj.from.city +"</li>";
-		            output+= "<li> State: " + json_obj.from.state +"</li>";
-			    output+= "<li> Zip: " + json_obj.from.zip +"</li>";
-			    output+= "</ul> </li>";
-		            output+= "<li><font color='blue'><b>To: </b></font><ul>";
-		            output+= "<li> City: " + json_obj.to.city +"</li>";
-		            output+= "<li> State: " + json_obj.to.state +"</li>";
-			    output+= "<li> Zip: " + json_obj.to.zip +"</li>";
-			    output+= "</ul> </li>";
-			    
-			    output+= "<li> <font color='blue'><b>Lines </b></font><ul>";
-			    var json_array= json_obj.lines;
-			    
-			json_array.sort(sort_by('weight', false, parseInt));
-			//json_array.sort(sort_by('product', false, function(a){return a.toUpperCase()}));
-		            for (var i in json_array) {
-		                output+="<li> Line - " + i +"<ul> <li> Product: "+ json_obj.lines[i].product +"</li> <li> Weight:" + json_obj.lines[i].weight +"</li> <li> Volume: " + json_obj.lines[i].volume +"</li> <li> Hazard:"+ json_obj.lines[i].hazard +"</li> </ul> </li>";
-
-		            }
-		            
-		         output+="</ul> </li>";
-		         
-		         output+="<li> Instructions: "+ json_obj.instructions +" </li> </ul>";
-		                 output+="</div>";
-			}
-		  
-                    $('#result').html(output);
-                    prepareList();
+	   	              var output= buildResult(data);
+	
+			          $('#result').html(output);
+                      prepareList();
                 },
                 error: function (data) {
                     alert("error: " + data);
@@ -156,6 +122,45 @@
 
     }
     
+    function buildResult(data){
+    	var output="";
+    	if (data.indexOf("ERROR") == 0){
+ 		   output = data;
+ 		   alert (data);
+
+                 } else {
+                 var json_obj = $.parseJSON(data);//parse JSON
+ 		            output+="<div id='outerBox'>";
+ 		            output+="<ul id='stretchItems'><li> <font color='blue'><b>Order ID </b></font> "+ json_obj.id +"</li>";
+ 		            output+= "<li> <font color='blue'><b>From: </b></font><ul>";
+ 		            output+= "<li> City: " + json_obj.from.city +"</li>";
+ 		            output+= "<li> State: " + json_obj.from.state +"</li>";
+ 			    output+= "<li> Zip: " + json_obj.from.zip +"</li>";
+ 			    output+= "</ul> </li>";
+ 		            output+= "<li><font color='blue'><b>To: </b></font><ul>";
+ 		            output+= "<li> City: " + json_obj.to.city +"</li>";
+ 		            output+= "<li> State: " + json_obj.to.state +"</li>";
+ 			    output+= "<li> Zip: " + json_obj.to.zip +"</li>";
+ 			    output+= "</ul> </li>";
+ 			    
+ 			    output+= "<li> <font color='blue'><b>Lines </b></font><ul>";
+ 			    var json_array= json_obj.lines;
+ 			    
+ 			json_array.sort(sort_by('weight', false, parseInt));
+ 			//json_array.sort(sort_by('product', false, function(a){return a.toUpperCase()}));
+ 		            for (var i in json_array) {
+ 		                output+="<li> Line - " + i +"<ul> <li> Product: "+ json_obj.lines[i].product +"</li> <li> Weight:" + json_obj.lines[i].weight +"</li> <li> Volume: " + json_obj.lines[i].volume +"</li> <li> Hazard:"+ json_obj.lines[i].hazard +"</li> </ul> </li>";
+
+ 		            }
+ 		            
+ 		         output+="</ul> </li>";
+ 		         
+ 		         output+="<li> Instructions: "+ json_obj.instructions +" </li> </ul>";
+ 		                 output+="</div>";
+ 		                 
+ 		         return output;
+    	
+    }
     /*
      * sort function
      */

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.venu.develop.dao.OrderDBHelper;
 import org.venu.develop.dao.OrderDBInfc;
 import org.venu.develop.model.Order;
 
@@ -30,7 +29,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
     private OrderDBInfc orderDao;
 
     @Autowired
-    private LocalCacheService<Integer, Order> lruCache;
+    private LocalCacheService<Long, Order> lruCache;
 
    
   public OrderProcessServiceImpl() {}
@@ -46,7 +45,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 	}
 
 	@Override
-	public Order searchOrder(Integer orderId) throws SQLException {
+	public Order searchOrder(Long orderId) throws IOException, SQLException, ClassNotFoundException {
 		logger.debug("in OrderProcessServiceImpl.searchOrder( id:" +orderId + ")");
 		
 		Order order = new Order();

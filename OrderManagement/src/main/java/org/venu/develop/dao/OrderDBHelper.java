@@ -2,17 +2,14 @@ package org.venu.develop.dao;
 
 
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Array;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSetMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Struct;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,19 +17,16 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartFile;
 import org.venu.develop.model.Address;
 import org.venu.develop.model.LineItem;
 import org.venu.develop.model.Order;
-import org.venu.develop.service.OrderParser;
 
-import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleTypes;
-import oracle.sql.*;
+import oracle.sql.ARRAY;
+import oracle.sql.STRUCT;
+import oracle.sql.TypeDescriptor;
 
 /**
   * Simple Java Program to connect Oracle database by using Oracle JDBC thin driver.
@@ -40,25 +34,19 @@ import oracle.sql.*;
   * @author venu
   */
 @Repository("orderDao")
-@ComponentScan(basePackages = { "org.venu.develop.*" })
 
 public class OrderDBHelper implements OrderDBInfc{
-	 
-
+ 
 	@Value("${oracle.db.driver}")
 	private String oraDriver;
 
 	@Value("${oracle.user}")
 	private String oraUser;
  
-
 	@Value("${oracle.password}")
 	private String oraPwd;
  
-
 	private final Logger logger = LoggerFactory.getLogger(OrderDBHelper.class);
-
-
 
 	private static final String sqlLookUp = 
 		     "Select a.id, instructions, b.city as from_city, b.state as from_state, b.zip as from_zip,"
@@ -80,15 +68,15 @@ public class OrderDBHelper implements OrderDBInfc{
 
   
     public Order dataInsert(Order o) throws SQLException{
-     	Integer id = dataInsertWork(o);
+     	Long id = dataInsertWork(o);
     	o.setId(id);
     	return o;
     	
     }
     
-    private Integer dataInsertWork(Order order) throws SQLException {
+    private Long dataInsertWork(Order order) throws SQLException {
 
-        int orderId = 0;
+        Long orderId = 0l;
         String message = "";
 
          //URL of Oracle database server
@@ -129,7 +117,7 @@ public class OrderDBHelper implements OrderDBInfc{
 	         cstmt.setString(8, order.getInstructions());
 
 	         cstmt.execute();
-	         orderId = cstmt.getInt(9);
+	         orderId = cstmt.getLong(9);
 	         message = cstmt.getString(10);
 	         } 
 		catch (SQLException e) {
@@ -163,7 +151,7 @@ public class OrderDBHelper implements OrderDBInfc{
     private String buildLineItemsSQL (List<LineItem> lineItems) {
     	StringBuilder sql = new StringBuilder();
     	sql.append ("INSERT ALL " );
-    	for (LineItem lineitem: lineItems){
+    	for (LineItem lineitem: lineItems){ 
     		Boolean bl = lineitem.getHazard();
     		String hazard_str = "'N'";
     		 
@@ -187,7 +175,7 @@ public class OrderDBHelper implements OrderDBInfc{
     }
 
 
-	public Order lookUpDBBKUP(int orderId) throws SQLException {
+	public Order lookUpDBBKUP(Long orderId) throws SQLException {
 		
 	    Order order = new Order();
 		int rowCount=0;
@@ -204,7 +192,7 @@ public class OrderDBHelper implements OrderDBInfc{
 	     //creating connection to Oracle database using JDBC
 	     Connection conn;
 		conn = DriverManager.getConnection(url,props);
-		//logger.debug("DriverManager constructed===================================================================" + oraUser);
+		logger.debug("DriverManager constructed===================================================================" + oraUser);
 
 	
 	     //creating PreparedStatement object to execute query
@@ -284,8 +272,10 @@ public class OrderDBHelper implements OrderDBInfc{
 	    * search database for a given order id
 	    */
 	@SuppressWarnings("deprecation")
-	public Order lookUpDB(int orderId) throws SQLException {
+	public Order lookUpDB(Long orderId) throws SQLException {
 		
+		logger.debug("DriverManager constructed===================================================================" + oraUser);
+
 		logger.debug("Entered OrderDBHelper.lookUpDB()");
 	    Order order = new Order();
 		String message="";
@@ -337,7 +327,7 @@ public class OrderDBHelper implements OrderDBInfc{
 			cstmt.registerOutParameter(2, OracleTypes.ARRAY, "MY_TABLE"); // l_col_data:
 			cstmt.registerOutParameter(3, OracleTypes.STRUCT, "ADDRESS_OBJ"); // from_address
 			cstmt.registerOutParameter(4, OracleTypes.STRUCT, "ADDRESS_OBJ"); // to_address
-			cstmt.setInt(5, orderId);
+			cstmt.setLong(5, orderId);
 			cstmt.registerOutParameter(6, Types.CHAR); // message
 
 			cstmt.execute();
@@ -394,7 +384,7 @@ public class OrderDBHelper implements OrderDBInfc{
 			 * attribute); ++idx; } System.out.println(tmp); }
 			 */
 			String instructions = cstmt.getString(1);
-			int id = cstmt.getInt(5);
+			Long id = cstmt.getLong(5);
 
 			order.setFrom(fromAddress);
 			order.setTo(toAddress);

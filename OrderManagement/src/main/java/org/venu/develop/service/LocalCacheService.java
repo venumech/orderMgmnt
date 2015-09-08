@@ -2,20 +2,21 @@ package org.venu.develop.service;
 	 
 	import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.collections.MapIterator;
-	import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections.map.LRUMap;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 	@Repository("lruCache")
 public class LocalCacheService<K, T> {
- 
-	/**
-	 * @author Crunchify.com
-	 */
 	 
+		@Value("${cache.live.time}")
+		private String $cache_livetime;
+		
+
+		
 	    private long timeToLive;
 	    private LRUMap cacheMap;
 	 
@@ -31,10 +32,13 @@ public class LocalCacheService<K, T> {
 	  //200, 500, 6
 	    public LocalCacheService() {
 	    	this(2000, 5000, 10);
+	    	System.out.println("$cache_livetime=???????????????????????????????"+ $cache_livetime);
 	    }
 	    
 	    
 	    public LocalCacheService(long timeToLive, final long timerInterval, int maxItems) {
+	    	System.out.println("$cache_livetime=???????????????????????????????"+ $cache_livetime);
+
 	        this.timeToLive = timeToLive * 1000;
 	 
 	        cacheMap = new LRUMap(maxItems);
@@ -43,7 +47,7 @@ public class LocalCacheService<K, T> {
 	 
 	            Thread t = new Thread(new Runnable() {
 	                public void run() {
-	                    while (true) {
+	                    while (true) { //Always run. as this is a daemon thread
 	                        try {
 	                            Thread.sleep(timerInterval * 1000);
 	                        } catch (InterruptedException ex) {

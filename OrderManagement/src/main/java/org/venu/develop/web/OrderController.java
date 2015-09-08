@@ -1,5 +1,6 @@
 package org.venu.develop.web;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -85,9 +86,10 @@ public class OrderController {
         Order order = null;
 		logger.debug("searchOrder() is started!; query=" + query);
 
-        Integer orderId = null;
+        Long orderId = null;
         try{
-        	orderId = Integer.parseInt(query);
+        	orderId = Long.parseLong(query);
+        	//Integer.parseInt(query);
         	
         	logger.debug("searchOrder(): orderId =" +orderId); 
 
@@ -98,6 +100,10 @@ public class OrderController {
         		result= "ERROR: " + query +", Not a valid order_id. please try with a valid number";
         		return result;
         } catch (SQLException e) {
+			return "ERROR: Search order is not processed. <br>" + e.getMessage();
+		} catch (IOException e) {
+			return "ERROR: Search order is not processed. <br>" + e.getMessage();
+		} catch (ClassNotFoundException e) {
 			return "ERROR: Search order is not processed. <br>" + e.getMessage();
 		}
 

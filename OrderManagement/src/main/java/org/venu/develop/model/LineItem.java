@@ -1,5 +1,7 @@
 package org.venu.develop.model;
 
+import java.io.Serializable;
+
 /**
  * 
  */
@@ -8,7 +10,8 @@ package org.venu.develop.model;
  * @author Venu
  *
  */
-public class LineItem {
+@SuppressWarnings("serial")
+public class LineItem implements Serializable{
     private Double weight; 
     private Double volume;
     private Boolean hazard;

@@ -1,9 +1,11 @@
 package org.venu.develop.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Order {   
-	private Integer id;
+@SuppressWarnings("serial")
+public class Order implements Serializable{   
+	private Long id;
 	private Address from;
 	private Address to;
 	private List<LineItem> lines;
@@ -12,13 +14,13 @@ public class Order {
 	/**
 	 * @return the id
 	 */
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	/**

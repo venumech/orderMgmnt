@@ -3,9 +3,9 @@
  */
 package org.venu.develop.dao;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
-import org.springframework.web.multipart.MultipartFile;
 import org.venu.develop.model.Order;
 
 /**
@@ -14,7 +14,7 @@ import org.venu.develop.model.Order;
  */
 
 public interface OrderDBInfc {
-	public Order lookUpDB(int orderId) throws SQLException;
+	public Order lookUpDB(Long orderId) throws IOException, SQLException, ClassNotFoundException;
 	public Order dataInsert(Order order) throws SQLException;
 
 }

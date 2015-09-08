@@ -1,6 +1,13 @@
 package org.venu.develop.model;
 
-public class Address {
+import java.io.Serializable;
+
+/*
+ * need to implement serializable (marker interface) when referenced to serialize the object, 'Order' to the hard disk.
+ */
+public class Address implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	private String city;
 	private String state;
 	private String zip;

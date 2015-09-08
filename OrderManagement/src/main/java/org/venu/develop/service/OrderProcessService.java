@@ -11,5 +11,5 @@ public interface OrderProcessService {
 
 	public Order saveOrder(MultipartFile mFile) throws IOException, SQLException;
 	
-	public Order searchOrder (Integer orderId) throws SQLException;
+	public Order searchOrder (Long orderId) throws SQLException, IOException, ClassNotFoundException;
 }
