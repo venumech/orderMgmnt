@@ -3,7 +3,9 @@ package org.venu.develop.model;
 import java.io.Serializable;
 
 /*
- * need to implement serializable (marker interface) when referenced to serialize the object, 'Order' to the hard disk.
+ * When the database access is not set up, we need to implement serializable (marker interface)
+ * for the object, 'Order' to be serialized and the data('Order Object graph') is saved to the hard disk.
+ * 
  */
 public class Address implements Serializable{
 

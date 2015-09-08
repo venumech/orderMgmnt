@@ -3,6 +3,12 @@ package org.venu.develop.model;
 import java.io.Serializable;
 import java.util.List;
 
+/*
+ * When the database access is not set up, we need to implement serializable (marker interface)
+ * for the object, 'Order' to be serialized and the data('Order Object graph') is saved to the hard disk.
+ * 
+ */
+
 @SuppressWarnings("serial")
 public class Order implements Serializable{   
 	private Long id;

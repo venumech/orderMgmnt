@@ -29,7 +29,6 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		@Value("${oracle.password}")
 		private String dbPwd;
 		@Value("${cache.live.time}")
-		private  String $cache_livetime;
 		
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -42,8 +41,6 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		InternalResourceViewResolver viewResolver 
                          = new InternalResourceViewResolver();
 		
-		System.out.println($cache_livetime + "; oracle.user =====================================================" +dbUser);
-
 		viewResolver.setViewClass(JstlView.class);
 		viewResolver.setPrefix("/WEB-INF/views/jsp/");
 		viewResolver.setSuffix(".jsp");
