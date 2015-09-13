@@ -10,7 +10,7 @@
 application.proprties
 
 # Package Files #
-*.jar
+
 *.war
 *.ear
 bin/
