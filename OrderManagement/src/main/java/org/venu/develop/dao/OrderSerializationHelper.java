@@ -12,6 +12,7 @@ import org.venu.develop.model.Order;
 //@Repository("orderDao")
 public class OrderSerializationHelper implements OrderDBInfc{
 
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
@@ -21,7 +22,7 @@ public class OrderSerializationHelper implements OrderDBInfc{
 	public Order lookUpDB(Long orderId) throws IOException, ClassNotFoundException{
 		Order order = null;
 		try {
-			FileInputStream fileIn = new FileInputStream("resources\\" + orderId + ".ser");
+			FileInputStream fileIn = new FileInputStream(SERIALIZED_LOCATION + orderId + ".ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			order = (Order) in.readObject();
 			in.close();
@@ -46,7 +47,7 @@ public class OrderSerializationHelper implements OrderDBInfc{
 		order.setId(orderId);
 
 			try {
-				FileOutputStream fileOut = new FileOutputStream("resources\\" + order.getId()+".ser");
+				FileOutputStream fileOut = new FileOutputStream(SERIALIZED_LOCATION + order.getId()+".ser");
 				ObjectOutputStream out = new ObjectOutputStream(fileOut);
 				out.writeObject(order);
 				out.close();

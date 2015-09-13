@@ -57,15 +57,19 @@ public class OrderParser {
 		boolean bInstructions = false;
 		boolean isValidXML = false;
 		Order order = null;
+		String xmlFileData=null;
+		final String ORDER_SCHEMA_DOC = "src/main/resources/order.xsd";
 
 		Address fromAddress = new Address();
 		Address toAddress = new Address();
 		LineItem lineItem = null;
 		List<LineItem> lineItems = null;
-
-		xmlString = new String(file.getBytes());
 		
-		isValidXML = validateXMLSchema("resources/order.xsd", xmlString);
+		xmlFileData = new String(file.getBytes());
+
+		xmlString = xmlFileData;
+		
+		isValidXML = validateXMLSchema(ORDER_SCHEMA_DOC, xmlString);
 		if (!isValidXML )  {
 			 System.out.println("we are not processinng th XML document. XML does not comply with the schema");
 			 return null;
@@ -213,18 +217,17 @@ public class OrderParser {
 	/*
 	 * check if the xml input is valid
 	 */
-	public boolean validateXMLSchema(String xsdPath, String xmlPath) {
+	public boolean validateXMLSchema(String xsdPath, String xmlPath) throws IOException{
 
 		try {
 			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			InputStream in = IOUtils.toInputStream(xmlString, "UTF-8");
-			Schema schema = factory.newSchema(new File("resources/order.xsd"));
-			// Schema schema = factory.newSchema((Source) in);
+			Schema schema = factory.newSchema(new File(xsdPath));
 			Validator validator = schema.newValidator();
 			validator.validate(new StreamSource(in));
 		} catch (IOException | SAXException e) {
 			System.out.println("Exception: " + e.getMessage());
-			return false;
+			throw new IOException(e.getMessage());
 		}
 		return true;
 	}
