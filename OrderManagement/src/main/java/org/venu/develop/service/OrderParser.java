@@ -122,7 +122,6 @@ public class OrderParser {
 					Characters characters = event.asCharacters();
 					if (bInstructions) {
 						 instructions = characters.getData();
-						System.out.println("instructions= " + instructions);
 						order.setInstructions(instructions);
 						bInstructions=false;
 					}
