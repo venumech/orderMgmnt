@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 
 /**
  * refer the LRUMap as introduced by 'Apache' which is a special type of cache
- * where we can mention the size. The size selected is identified to be optimal
- * as this memory becomes overhead on the hard ware resources The daemon thread
- * will run once for the time mentioned in the timerInterval. And identify if a
- * particular map element (cache obj) is over living by the time specified as
+ * where we can mention the max map elements. The size selected should be optimal
+ * as this memory becomes overhead on the hard ware resources if its too big. 
+ * The thread (set as daemon thread) will run once for the time mentioned in the timerInterval;
+ *  and identify if aparticular map element (cache obj) is over living by the time specified as
  * mentioned by 'timeToLive' and deletes those map elements from the cache. Max
  * elements are the allowed max cache size at any given point of time.
  * 
