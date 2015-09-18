@@ -1,6 +1,7 @@
 notes:
 
-1.	The primary technologies that I have used are java8 / jee; spring STS ide(3.7); gradle build tool; Stax parser; Oracle 12c; PL/SQL; jquery/css/ajax; Spring MVC (spring 4 version) with no xml config files but rich set of Annotations; jetty9 and apache-tomcat-7.0.63 server servlet3 container and some other open source frame works like logback, google’s gson.
+1.	1.	The primary technologies that I have used are jquery/css/ajax google’s angular.js, BootStrap framework, google –gson for UI development.
+ spring STS ide(3.7); gradle build tool; Stax parser; Oracle 12c; PL/SQL;; Spring MVC(spring 4 version) with no xml config files but rich set of Annotations; jetty9 and apache-tomcat-7.0.63 server servlet3 container and some other open source frame works like logback.
 
 2.	The Screens are developed using ajax to meet the requirement of ‘no screen refresh’.
 3.	The xml file input is parsed at the server side using Stax. There are many choices available like DOM/SAX/JAXB etc. but Stax is chosen for less in memory foot print which is a push based event driven system. Java sources are found in the attached zip, java soures.zip. (war file, java source files, plus the thread pool dev work)
