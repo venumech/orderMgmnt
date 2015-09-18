@@ -4,7 +4,7 @@
             $scope.myData.doClick = function(item, event) {
 
                 var query = document.getElementById("orderId").value;
-                alert(query);
+                // alert(query);
                // var query = 1442158639469;
                 var url =  'searchOrder.do?q=' + query;
 
@@ -43,7 +43,7 @@ $scope.groupToPages = function () {
     $scope.pagedItems = [];
 
     for (var i = 0; i < $scope.lines.length; i++) {
-        alert(i + "...  " + $scope.lines[i].product);
+        //alert(i + "...  " + $scope.lines[i].product);
     	if (i % $scope.itemsPerPage === 0) {
             $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [ $scope.lines[i] ];
         } else {
