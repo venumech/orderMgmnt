@@ -14,17 +14,22 @@
     <script type="text/javascript">
         var sortingOrder = 'product';
     </script>
-<h1> Order Search Process</h1>
-  <div ng-controller="MyController" >
-   Enter Order Id: <input class="input-large search-query" type="text" id="orderId" value="1442604643249"> &nbsp;&nbsp;&nbsp;<!-- 27309 --> 
+    <h1> Order Search Process</h1>
+    <div ng-controller="MyController">
+        Enter Order Id: <input class="input-large search-query" type="text" id="orderId"  placeholder="1442604643249" value="1442604643249"> &nbsp;&nbsp;&nbsp;<!-- 27309 --> 
 
     Search System : <button ng-click="myData.doClick(item, $event)">Send AJAX Request</button>
    <!--  <p class="add-on" ng-click="myData.doClick(item, $event)"><i class="icon-search"></i></p>
      -->   
+     <!-- <div class="container"> -->
+        <div class=" centered text-center" ng-hide="dataLoaded != true"> 
+            <span class="label label-success"  style="width: 400px;">Order details retrieved for Order ID: {{myData.id}}</span>
+        </div>
+    <!--  </div> -->
         <hr />
         <div ng-hide="dataLoaded != true"> 
-    Order ID: {{myData.id}}
-    <table class="table table-striped table-condensed table-hover">
+    <table class="table table-striped table-condensed table-hover" style="max-width: 400px;">
+     <caption class="label label-info">Order Shipment Details</caption>
                 <thead>
                     <tr>
                         <th class="id">From:&nbsp;</a></th>
@@ -42,12 +47,14 @@
                 </tr>
                 </tbody>
 </table>
+Shipping Instructions: {{instructions}}
     
-             <table>
+             <table class="table-bordered table-striped table-condensed table-hover" >
+                  <caption class="label label-info">Order Item Details</caption>
              <thead>
                     <tr>
                         <th class="number">Item Number&nbsp;</th>
-                        <th class="product">Product&nbsp;<a ng-click="sort_by('product')"><i class="icon-sort"></i></a></th>
+                        <th class="product" style="min-width: 150px;">Product&nbsp;<a ng-click="sort_by('product')"><i class="icon-sort"></i></a></th>
                         <th class="weight">Weight&nbsp;<a ng-click="sort_by('weight')"><i class="icon-sort"></i></a></th>
                         <th class="volume">Volume&nbsp;<a ng-click="sort_by('volume')"><i class="icon-sort"></i></a></th>
                         <th class="hazard">Hazard&nbsp;<a ng-click="sort_by('hazard')"><i class="icon-sort"></i></a></th>
@@ -58,7 +65,7 @@
                         <div class="pagination pull-right">
                             <ul>
                                 <li ng-class="{disabled: currentPage == 0}">
-                                    <a href ng-click="prevPage()">« Previous</a>
+                                    <a href ng-click="prevPage()">&laquo; Previous</a>
                                 </li>
                                 <li ng-repeat="n in range(pagedItems.length)"
                                     ng-class="{active: n == currentPage}"
@@ -73,7 +80,7 @@
                     </td>
                 </tfoot>
                 <tbody>
-            <tr ng-repeat = "line in myData.lines">
+            <tr ng-repeat = "line in pagedItems[currentPage] | orderBy:sortingOrder:reverse"">
                <td>{{ $index + 1 }}</td>
                <!-- <td ng-if="$odd" style="background-color:#f1f1f1">{{ line.product }}</td>
                <td ng-if="$even">{{ line.product }}</td>

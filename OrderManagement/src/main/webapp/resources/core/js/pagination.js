@@ -1,5 +1,20 @@
- angular.module("myapp", [])
-        .controller("MyController", function($scope, $http) {
+ var myApp = angular.module("myapp", []);
+ /*
+ myApp.config(function($routeProvider){
+	 $routeProvider
+	 		.when('/',
+	 				{controller: 'MyController',
+	 				  templateUrl:'create.jsp'
+	 				})
+	 			.when('/create',
+	 		 			{controller: 'MyController',
+	 		 			  templateUrl: 'search.jsp'
+	 		 			})
+	 		 		.otherwise({redirectTo: 'create.html'});
+	 			 					 			
+ });
+ */
+        myApp.controller("MyController", ['$scope', '$http', '$filter', function($scope, $http, $filter) {
             $scope.myData = {};
             $scope.myData.doClick = function(item, event) {
 
@@ -24,6 +39,7 @@
 
 
 $scope.sortingOrder = sortingOrder;
+$scope.filteredItems = [];
 $scope.reverse = false;
 $scope.groupedItems = [];
 $scope.itemsPerPage = 5;
@@ -33,6 +49,13 @@ $scope.currentPage = 0;
 // init the filtered items
 $scope.init = function () {
 
+    $scope.filteredItems = $scope.lines;
+    //alert($scope.filteredItems.length);
+    // take care of the sorting order
+    if ($scope.sortingOrder !== '') {
+        $scope.filteredItems = $filter('orderBy')($scope.filteredItems, $scope.sortingOrder, $scope.reverse);
+    }
+    
     $scope.currentPage = 0;
     // now group by pages
     $scope.groupToPages();
@@ -42,14 +65,17 @@ $scope.init = function () {
 $scope.groupToPages = function () {
     $scope.pagedItems = [];
 
-    for (var i = 0; i < $scope.lines.length; i++) {
-        //alert(i + "...  " + $scope.lines[i].product);
+    for (var i = 0; i < $scope.filteredItems.length; i++) {
+        //alert(i + "...  " + $scope.filteredItems[i].product);
     	if (i % $scope.itemsPerPage === 0) {
-            $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [ $scope.lines[i] ];
+            $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [ $scope.filteredItems[i] ];
         } else {
-            $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.lines[i]);
+            $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.filteredItems[i]);
         }
     }
+    //alert('pagedItems.length=' + $scope.pagedItems.length);
+    //alert('pagedItems.length=' + $scope.pagedItems[0].length);
+    //alert('pagedItems.length=' + $scope.pagedItems[1].length);
 };
 
 $scope.range = function (start, end) {
@@ -90,15 +116,8 @@ $scope.sort_by = function(newSortingOrder) {
 
     $scope.sortingOrder = newSortingOrder;
 
-    // icon setup
-    $('th i').each(function(){
-        // icon reset
-        $(this).removeClass().addClass('icon-sort');
-    });
-    if ($scope.reverse)
-        $('th.'+new_sorting_order+' i').removeClass().addClass('icon-chevron-up');
-    else
-        $('th.'+new_sorting_order+' i').removeClass().addClass('icon-chevron-down');
+  //after changing the sort order reset the entire array aligned to the new sort order or sort element orderby
+    $scope.init();
 };
 
 
@@ -116,4 +135,5 @@ $scope.sort_by = function(newSortingOrder) {
             }
 
 
-        } );
+        }]);
+ //myApp.MyController.$inject = ['$scope', '$filter'];
