@@ -1,4 +1,6 @@
  var myApp = angular.module("myapp", []);
+ 
+ var controllers = {};
  /*
  myApp.config(function($routeProvider){
 	 $routeProvider
@@ -14,8 +16,87 @@
 	 			 					 			
  });
  */
-        myApp.controller("MyController", ['$scope', '$http', '$filter', function($scope, $http, $filter) {
+ 
+ /*-----------------------------------file upload controller------------------------------------*/
+ myApp.directive('fileModel', ['$parse', function ($parse) {
+	    return {
+	        restrict: 'A',
+	        link: function(scope, element, attrs) {
+	            var model = $parse(attrs.fileModel);
+	            var modelSetter = model.assign;
+	            
+	            element.bind('change', function(){
+	                scope.$apply(function(){
+	                    modelSetter(scope, element[0].files[0]);
+	                });
+	            });
+	        }
+	    };
+	}]);
+
+	myApp.service('fileUpload', ['$http', function ($http) {
+	    var fileUpload = {};
+
+	    fileUpload.order = {};
+	    fileUpload.error ={};
+		
+		var that = this;
+		this.datafile1=12345;
+		this.datafile;
+	    this.uploadFileToUrl = function(file, uploadUrl){
+	        var fd = new FormData();
+	        fd.append('file', file);
+	        $http.post(uploadUrl, fd, {
+	            transformRequest: angular.identity,
+	            headers: {'Content-Type': undefined}
+	        })
+	        .success(function(data){
+	            //alert('Order data saved successfully to the system. Order Id=' + data.id);
+	            fileUpload.order = data;
+	            return fileUpload.order;
+	            
+	        })
+	        .error(function(error_data){
+	            alert('Error occured while saving the order into the system!');
+	            fileUpload.error = {'Error':
+	            	'Error occured while saving the order into the system!'};
+	            return fileUpload.error;
+
+	        });
+	        
+	        return fileUpload;
+	    }
+	}]);
+	
+	myApp.controller('fileUploadController', ['$scope', 'fileUpload', function($scope, fileUpload){
+	    
+
+        $scope.xxx =  fileUpload.datafile1;
+        $scope.orderdata={};
+	    $scope.uploadFile = function(){
+	    	//alert('entered');
+	        var file = $scope.myFile;
+	        console.log('file is ' );
+	        console.dir(file);
+	        var uploadUrl = CONTEXT_PATH + 'createOrder.do';
+	        $scope.orderdata =  fileUpload.uploadFileToUrl(file, uploadUrl);
+
+	        //$scope.serv = fileUpload;
+	        //$scope.data1 =  fileUpload.datafile;
+	        //alert ('$scope.fileinfo, id=' + $scope.orderdata.order.id);
+
+	    };
+	    
+
+	    
+	}]);
+	
+	/*---------------------------------------order search controller----------------------------------------*/
+	myApp.controller("MyController", ['$scope', '$http', '$filter', function($scope, $http, $filter) {
             $scope.myData = {};
+            $scope.action = {
+                    flag: true
+                  };
             $scope.myData.doClick = function(item, event) {
 
                 var query = document.getElementById("orderId").value;
@@ -35,29 +116,27 @@
                     $scope.fromAddress =data.from;
                     $scope.toAddress =data.to;
                     $scope.instructions = data.instructions;
-<!------------- ------------------------------------------------------- -->
-
 
 $scope.sortingOrder = sortingOrder;
-$scope.filteredItems = [];
+$scope.sortedItems = [];
 $scope.reverse = false;
 $scope.groupedItems = [];
-$scope.itemsPerPage = 5;
+$scope.rowsPerPage = 5;
 $scope.pagedItems = [];
 $scope.currentPage = 0;
 
 // init the filtered items
 $scope.init = function () {
 
-    $scope.filteredItems = $scope.lines;
-    //alert($scope.filteredItems.length);
+    $scope.sortedItems = $scope.lines;
+    //alert($scope.sortedItems.length);
     // take care of the sorting order
     if ($scope.sortingOrder !== '') {
-        $scope.filteredItems = $filter('orderBy')($scope.filteredItems, $scope.sortingOrder, $scope.reverse);
+        $scope.sortedItems = $filter('orderBy')($scope.sortedItems, $scope.sortingOrder, $scope.reverse);
     }
     
     $scope.currentPage = 0;
-    // now group by pages
+    // now group by pages based on the page size value, as in $scope.rowsPerPage
     $scope.groupToPages();
 };
 
@@ -65,12 +144,12 @@ $scope.init = function () {
 $scope.groupToPages = function () {
     $scope.pagedItems = [];
 
-    for (var i = 0; i < $scope.filteredItems.length; i++) {
-        //alert(i + "...  " + $scope.filteredItems[i].product);
-    	if (i % $scope.itemsPerPage === 0) {
-            $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)] = [ $scope.filteredItems[i] ];
+    for (var i = 0; i < $scope.sortedItems.length; i++) {
+        //alert(i + "...  " + $scope.sortedItems[i].product);
+    	if (i % $scope.rowsPerPage === 0) {
+            $scope.pagedItems[Math.floor(i / $scope.rowsPerPage)] = [ $scope.sortedItems[i] ];
         } else {
-            $scope.pagedItems[Math.floor(i / $scope.itemsPerPage)].push($scope.filteredItems[i]);
+            $scope.pagedItems[Math.floor(i / $scope.rowsPerPage)].push($scope.sortedItems[i]);
         }
     }
     //alert('pagedItems.length=' + $scope.pagedItems.length);
@@ -121,8 +200,6 @@ $scope.sort_by = function(newSortingOrder) {
 };
 
 
-
-<!------------- ------------------------------------------------------- -->
                     
                 });
                 responsePromise.error(function(data, status, headers, config) {
@@ -132,8 +209,12 @@ $scope.sort_by = function(newSortingOrder) {
                 	alert(data);
                 	alert("AJAX failed!");
                 });
+            };
+
+            $scope.myData.createOrder = function(item, event) {
+            	alert('radio button clicked');
             }
-
-
         }]);
+	
+	myApp.controller(controllers);
  //myApp.MyController.$inject = ['$scope', '$filter'];

@@ -14,20 +14,79 @@
     <script type="text/javascript">
         var sortingOrder = 'product';
     </script>
-    <h1> Order Search Process</h1>
-    <div ng-controller="MyController">
+    
+<script type="text/javascript"> var CONTEXT_PATH = '${pageContext.request.contextPath}/';</script>
+    <h1> Order Process System</h1>
+
+      
+    <div ng-controller="MyController">    
+    <div id="radioBtnDiv">
+        <table width="100%">
+           <tr>
+              <td> <input name="order-action" type="radio" value="create" ng-model="action.flag"  ng-change = "createOrder()"/> Create Order </td>
+           </tr>
+           <tr>
+           </tr>
+           <tr>
+              <td> <input name="order-action" type="radio" value="lookup" ng-model="action.flag" /> Look up Order </td>
+           </tr>
+        </table>
+    </div>
+<!--     
+    <div  id="createDiv" class=" centered text-center" ng-show="action.flag == 'create'"> 
+       XML to Upload: <input type="file" id="xml-data"> <br>
+       <input type="button" id="upload" value="Create" onclick="createOrder()"/>
+       
+    </div>
+ -->   
+ <br />
+      <div ng-controller = "fileUploadController"  id="createDiv" class=" centered text-center" ng-show="action.flag == 'create'"> 
+    <input type="file" file-model="myFile"/>
+    <button ng-click="uploadFile()">Save Order</button>
+    	<br />
+		<div ng-show="orderdata.order.id > 0">
+	            <p class="label label-success"  style="width: 400px;" >Order is saved successfully. Order ID: {{orderdata.order.id}}</p>
+		</div>
+    <div ng-show="action.flag == 'create'"> Sample XML file data:<br />
+        <textarea rows="11" cols="500">
+				<?xml version="1.0" encoding="utf-8"?>
+				<order>
+    			<from zip="80817" state="CO" city="COLORADAO SPRINGS"/>
+    			<to zip="96821" state="HI" city="Honolulu"/>
+    			<lines>
+        			<line weight="10000.1" volume="14" hazard="false" product="Engine Block"/>
+        			<line weight="20000.55" volume="8" hazard="true" product="Liquid Nitrogen"/>
+    			</lines>
+    			<instructions>Transport in secure container</instructions>
+				</order>
+		</textarea>
+    </div>
+	<br />
+    
+	<!-- dtat1 = {{xxx}} -->
+	<br />
+
+	<!--  orderdata.order = {{orderdata.order}} -->
+
+	<!--  orderdata.order.id = {{orderdata.order.id}} -->
+	</div>
+    <!--     <tt>action = {{action.flag | json}}</tt><br/> -->
+    
+    <div  id="lookupDiv" class=" centered text-center" ng-show="action.flag == 'lookup'"> 
+
         Enter Order Id: <input class="input-large search-query" type="text" id="orderId"  placeholder="1442604643249" value="1442604643249"> &nbsp;&nbsp;&nbsp;<!-- 27309 --> 
 
     Search System : <button ng-click="myData.doClick(item, $event)">Send AJAX Request</button>
+    </div>
    <!--  <p class="add-on" ng-click="myData.doClick(item, $event)"><i class="icon-search"></i></p>
      -->   
      <!-- <div class="container"> -->
-        <div class=" centered text-center" ng-hide="dataLoaded != true"> 
+        <div class=" centered text-center" ng-show="dataLoaded == true && action.flag == 'lookup'"> 
             <span class="label label-success"  style="width: 400px;">Order details retrieved for Order ID: {{myData.id}}</span>
-        </div>
+
     <!--  </div> -->
         <hr />
-        <div ng-hide="dataLoaded != true"> 
+        <div ng-show="dataLoaded == true && action.flag == 'lookup'"> 
     <table class="table table-striped table-condensed table-hover" style="max-width: 400px;">
      <caption class="label label-info">Order Shipment Details</caption>
                 <thead>
@@ -99,7 +158,7 @@ Shipping Instructions: {{instructions}}
 
 
 <input type="checkbox" ng-model="mySwitch">Button
-
+        </div>
 </div>
 <div ng-show="errors == true">
 {{data.ERROR}} - {{data.message}}
