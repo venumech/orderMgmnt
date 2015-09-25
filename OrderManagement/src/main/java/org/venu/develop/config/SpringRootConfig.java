@@ -5,6 +5,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan({ "org.venu.develop.service" })
+@ComponentScan({ "org.venu.develop" })
 public class SpringRootConfig {
 }
