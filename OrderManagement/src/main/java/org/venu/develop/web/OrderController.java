@@ -1,9 +1,7 @@
 package org.venu.develop.web;
 
 import java.io.IOException;
-
 import java.sql.SQLException;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
-import org.venu.develop.model.LineItem;
 import org.venu.develop.model.Order;
 import org.venu.develop.model.OrderError;
-import org.venu.develop.model.Result;
 import org.venu.develop.service.OrderProcessService;
 
 import com.google.gson.Gson;
