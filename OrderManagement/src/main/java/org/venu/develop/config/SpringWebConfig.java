@@ -28,7 +28,6 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		//1.2.3.4
 		@Value("${oracle.password}")
 		private String dbPwd;
-		@Value("${cache.live.time}")
 		
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
