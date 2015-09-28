@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,14 +13,15 @@
 </head>
 
 <body ng-app="myapp">
+   <form name="orderForm">
     <script type="text/javascript">
-        var sortingOrder = 'product';
+        var sortingOrder = 'product'; //default sorting order for displayig the search result
     </script>
     
 <script type="text/javascript"> var CONTEXT_PATH = '${pageContext.request.contextPath}/';</script>
-    <h1> Order Process System</h1>
-
-      
+    <p class="bg-primary">
+	<img src="resources/core/images/order.JPG" class="img-responsive pull-right" />
+	</p>
     <div ng-controller="MyController">    
     <div id="radioBtnDiv">
         <table width="100%">
@@ -32,8 +35,9 @@
            </tr>
         </table>
     </div>
+    <hr />
 <!--     
-    <div  id="createDiv" class=" centered text-center" ng-show="action.flag == 'create'"> 
+    <div  id="createDiv" class="centered text-center" ng-show="action.flag == 'create'"> 
        XML to Upload: <input type="file" id="xml-data"> <br>
        <input type="button" id="upload" value="Create" onclick="createOrder()"/>
        
@@ -41,24 +45,35 @@
  -->   
  <br />
       <div ng-controller = "fileUploadController"  id="createDiv" class=" centered text-center" ng-show="action.flag == 'create'"> 
-    <input type="file" file-model="myFile"/>
+    Upload XML File:<input type="file" file-model="myFile"/>
     <button ng-click="uploadFile()">Save Order</button>
     	<br />
 		<div ng-show="orderdata.order.id > 0">
-	            <p class="label label-success"  style="width: 400px;" >Order is saved successfully. Order ID: {{orderdata.order.id}}</p>
+	            <p class="label label-success"  style="width: 400px;" >Order Successfully Saved into the System. Order ID: {{orderdata.order.id}}</p>
 		</div>
+		<div ng-show="orderdata.order.error == true">
+	            <p class="label label-warning" >Order Not  Saved into the System. Order ID: {{orderdata.order.errorMsg}}</p>
+		</div>
+		
+    	<!-- 
+		<div ng-show="orderdata.order.id > 0">
+	            <p class="label label-success"  style="width: 400px;" >{{orderdata.order.id}}</p>
+	            <button type="button" class="btn btn-success" ng-click="myData.doClick(item, $event)">Order Saved Successfully into the System. Look in it? <span class="badge">{{orderdata.order.id}}</span></button>
+		</div>		
+		-->
+
     <div ng-show="action.flag == 'create'"> Sample XML file data:<br />
         <textarea rows="11" cols="500">
-				<?xml version="1.0" encoding="utf-8"?>
-				<order>
-    			<from zip="80817" state="CO" city="COLORADAO SPRINGS"/>
-    			<to zip="96821" state="HI" city="Honolulu"/>
-    			<lines>
-        			<line weight="10000.1" volume="14" hazard="false" product="Engine Block"/>
-        			<line weight="20000.55" volume="8" hazard="true" product="Liquid Nitrogen"/>
-    			</lines>
-    			<instructions>Transport in secure container</instructions>
-				</order>
+<?xml version="1.0" encoding="utf-8"?>
+<order>
+  <from zip="80817" state="CO" city="COLORADAO SPRINGS"/>
+  <to zip="96821" state="HI" city="Honolulu"/>
+  <lines>
+    <line weight="10000.1" volume="14" hazard="false" product="Engine Block"/>
+    <line weight="20000.55" volume="8" hazard="true" product="Liquid Nitrogen"/>
+  </lines>
+  <instructions>Transport in secure container</instructions>
+</order>
 		</textarea>
     </div>
 	<br />
@@ -74,15 +89,16 @@
     
     <div  id="lookupDiv" class=" centered text-center" ng-show="action.flag == 'lookup'"> 
 
-        Enter Order Id: <input class="input-large search-query" type="text" id="orderId"  placeholder="1442604643249" value="1442604643249"> &nbsp;&nbsp;&nbsp;<!-- 27309 --> 
-
-    Search System : <button ng-click="myData.doClick(item, $event)">Send AJAX Request</button>
+        Enter Order Id: <input class="input-large search-query" name="orderId" type="text" id="orderId"  required placeholder="1443217475544" value="1443217475544"> &nbsp;&nbsp;&nbsp;<!-- 27309 --> 
+<p class="error" ng-show="orderForm.orderId.$dirty.required">Required</p>
+    Search System : <button ng-click="myData.doClick(item, $event)" required>Send AJAX Request</button>
+    Show items per page: <input class="input-small search-query" type="text" id="pagesize"  placeholder="2" value="2">
     </div>
    <!--  <p class="add-on" ng-click="myData.doClick(item, $event)"><i class="icon-search"></i></p>
      -->   
      <!-- <div class="container"> -->
         <div class=" centered text-center" ng-show="dataLoaded == true && action.flag == 'lookup'"> 
-            <span class="label label-success"  style="width: 400px;">Order details retrieved for Order ID: {{myData.id}}</span>
+            <span class="label label-success"  style="width: 400px;">Order details retrieved. Order ID: {{orderid}}</span>
 
     <!--  </div> -->
         <hr />
@@ -144,7 +160,7 @@ Shipping Instructions: {{instructions}}
                <!-- <td ng-if="$odd" style="background-color:#f1f1f1">{{ line.product }}</td>
                <td ng-if="$even">{{ line.product }}</td>
                -->
-               <td>{{ line.product }}</td>
+               <td style="width:300px;">{{ line.product }}</td>
                <td>{{ line.weight}}</td>
                <td>{{ line.volume }}</td>
                <td>{{ line.hazard }}</td>
@@ -161,11 +177,11 @@ Shipping Instructions: {{instructions}}
         </div>
 </div>
 <div ng-show="errors == true">
-{{data.ERROR}} - {{data.message}}
+<p class="label label-warning">  errors: {{error.errorMsg}} </p>
 </div>
     <script type="text/javascript" src="resources/core/js/pagination.js"></script>
-
-
+</div>
+</form>
 </body>
 
 </html>

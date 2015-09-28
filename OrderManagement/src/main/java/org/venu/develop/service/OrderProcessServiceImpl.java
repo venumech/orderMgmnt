@@ -18,7 +18,6 @@ import org.venu.develop.model.Order;
  * 
  */
 @Service 
-@ComponentScan(basePackages = { "org.venu.develop.*" })
 public class OrderProcessServiceImpl implements OrderProcessService {
 
 	private final Logger logger = LoggerFactory.getLogger(OrderProcessServiceImpl.class);

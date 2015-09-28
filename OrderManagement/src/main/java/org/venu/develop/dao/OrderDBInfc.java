@@ -16,6 +16,6 @@ import org.venu.develop.model.Order;
 public interface OrderDBInfc {
 	public Order lookUpDB(Long orderId) throws IOException, SQLException, ClassNotFoundException;
 	public Order dataInsert(Order order) throws IOException, SQLException;
-	String SERIALIZED_DATA_LOCATION = "src/main/resources/data/";
+	String SERIALIZED_DATA_LOCATION = "resources/data/";
 	String ORDER_XSD_LOCATION = "src/main/resources";
 }

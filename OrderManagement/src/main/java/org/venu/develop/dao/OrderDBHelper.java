@@ -56,16 +56,6 @@ public class OrderDBHelper implements OrderDBInfc{
 		     + " where a.id = d.order_id and a.from_address_id = b.address_id"
 		     + " and a.to_address_id = c.address_id"
 		     + " and a.id = ";
-	private static final String sqlLookUpBkup = 
-		     "Select a.id, instructions, b.city as from_city, b.state as from_state, b.zip as from_zip,"
-		     + " c.city as to_city, c.state as to_state, c.zip as to_zip,"
-		     + " weight, volume, hazard, product "
-		     + " from ORDERS a, (select * from ADDRESS) b, (select * from ADDRESS) c, LINE_ITEMS d"
-		     + " where a.id = d.order_id and a.from_address_id = b.address_id"
-		     + " and a.to_address_id = c.address_id"
-		     + " and a.id = ";
-		
-
   
     public Order dataInsert(Order o) throws SQLException{
      	Long id = dataInsertWork(o);

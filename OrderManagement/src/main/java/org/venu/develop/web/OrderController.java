@@ -1,6 +1,7 @@
 package org.venu.develop.web;
 
 import java.io.IOException;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -17,6 +18,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.venu.develop.model.LineItem;
 import org.venu.develop.model.Order;
+import org.venu.develop.model.OrderError;
+import org.venu.develop.model.Result;
 import org.venu.develop.service.OrderProcessService;
 
 import com.google.gson.Gson;
@@ -58,31 +61,52 @@ public class OrderController {
 
     @RequestMapping(value = "/order.do", method = RequestMethod.GET)
     public String index(Model model, WebRequest webRequest) {
-        return "order";
+        //return "FileUpload";
+    	return "order";
     }
     
     @RequestMapping(value = "/createOrder.do", method = RequestMethod.POST)
     public @ResponseBody String createOrder(@RequestParam("file") MultipartFile mFile) {
 
 		logger.debug("createOrder() is started!");
-    	
+		Order order = null;
+		OrderError oError = new OrderError();
+		Boolean isError = false;
         try {
             if (mFile != null && mFile.getSize() > 0) {
-                Order order = orderProcessServiceImpl.saveOrder(mFile);
-                //System.out.println(order.toString());
-                return "Order saved successfully Id=" + order.getId() + "<BR> <BR> <BR> " +new Gson().toJson(order); //success
+                order = orderProcessServiceImpl.saveOrder(mFile);
             } else {
-                return "Error occurred while processing request, please try later."; //fail
+            	oError.setErrorMsg("No file uploaded! ");
+            	oError.setError(true);
+            	isError = true;
             }
         } catch (Exception e) {
-            return "Error occurred while processing order, please try later." +e.getMessage();
+        	isError = true;
+        	String status = "Error occurred while processing order, please try later." +e.getMessage();
+        	oError.setError(isError);
+        	oError.setErrorMsg(status);
         }
+        
+        if (isError) {
+        	logger.error(new Gson().toJson(oError));
+        	return  new Gson().toJson(oError);
+        } else {
+
+            logger.debug("");
+            logger.debug(  new Gson().toJson(order) ); //success
+        }
+        
+
+    	return  new Gson().toJson(order);
     }
 
     @RequestMapping(value = "/searchOrder.do", method = RequestMethod.GET)
     public @ResponseBody String searchOrder(@RequestParam("q") String query) {
-    	
-        String result ="";
+
+        String jsonObj ="";
+        String errorStr ="";
+		OrderError oError = new OrderError();
+		Boolean isError = false;
         Order order = null;
 		logger.debug("searchOrder() is started!; query=" + query);
 
@@ -97,47 +121,40 @@ public class OrderController {
         	order = orderProcessServiceImpl.searchOrder(orderId);
 
         } catch (NumberFormatException e){
-        		result= "ERROR: " + query +", Not a valid order_id. please try with a valid number";
-        		return result;
+        	isError=true;
+        	errorStr= "'" + query +"', Not a valid Order Id. Please try with a valid number";
+        	oError.setError(isError);
+        	oError.setErrorMsg(errorStr);
         } catch (SQLException e) {
-			return "ERROR: Search order is not processed. <br>" + e.getMessage();
+        	errorStr= e.getMessage();
+        	isError=true;
+        	oError.setError(isError);
+        	oError.setErrorMsg(errorStr);
 		} catch (IOException e) {
-			return "ERROR: Search order is not processed. <br>" + e.getMessage();
+			isError=true;
+        	errorStr= e.getMessage() ;  
+        	oError.setError(isError);
+        	oError.setErrorMsg(errorStr);
 		} catch (ClassNotFoundException e) {
-			return "ERROR: Search order is not processed. <br>" + e.getMessage();
+			isError=true;
+        	errorStr=  e.getMessage();
+        	oError.setError(isError);
+        	oError.setErrorMsg(errorStr);
 		}
 
-	 /* {
-            //do lookup in service layer
-
-            Address from = new Address("Charlotte", "NC", "28277");
-            Address to = new Address("Cary", "NC", "28213");
-
-            Item item1 = new Item("1", 1.0, true, "Test1");
-            Item item2 = new Item("2", 1.0, false, "Test2");
-
-            List<Item> items = new ArrayList<Item>();
-            items.add(item1);
-            items.add(item2);
-
-            shipment = new Shipment(from, to, items, "No instrunctions");
-
-        }*/
-
-        	//for text display...
-       /* if (order != null)
-        	result = proessTreeStructure(order);
-        else result= "No data found for this orderid. please try with a valid id)";
-	*/
 
         //for json display
-        if (order == null){
-        	return "ERROR: No data found";
+        if (isError || order == null){
+        	logger.error(errorStr);
+        	
+        	return new Gson().toJson(oError); 
         }
-        result = new Gson().toJson(order); 
-        //System.out.println(result);
+        
+        
+        jsonObj = new Gson().toJson(order); 
+        System.out.println(jsonObj);
     		
-        return result;
+        return jsonObj;
     }
 
 

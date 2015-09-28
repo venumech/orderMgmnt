@@ -31,7 +31,7 @@ import org.venu.develop.model.Address;
 import org.venu.develop.model.LineItem;
 import org.venu.develop.model.Order;
 import org.xml.sax.SAXException;
-@Component("orderParer")
+@Component("orderParser")
 public class OrderParser {
 	private String xmlString = "<?xml version='1.0'?><order>" + "<from zip='10001' state='NY' city='NEW YORK'/>"
 			+ "<to zip='20001' state='DC' city='WASHINGTON'/>" + "<lines>"

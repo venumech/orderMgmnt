@@ -10,13 +10,16 @@ import java.util.List;
  */
 
 @SuppressWarnings("serial")
-public class Order implements Serializable{   
+public class Order implements Serializable{
+
+	//lombok-1.16.6.jar
+	//@Getter @Setter @NonNull
 	private Long id;
 	private Address from;
 	private Address to;
 	private List<LineItem> lines;
 	private String instructions;
-	
+
 	/**
 	 * @return the id
 	 */

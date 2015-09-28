@@ -38,7 +38,7 @@ public class OrderSerializationHelper implements OrderDBInfc{
 			
 			return;
 		}
-			if (file.mkdir()) {
+			if (file.mkdirs()) {
 				logger.debug("Directory is created!");
 			} else {
 				logger.error("Failed to create directory!");

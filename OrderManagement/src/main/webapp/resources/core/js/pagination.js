@@ -24,7 +24,8 @@
 	        link: function(scope, element, attrs) {
 	            var model = $parse(attrs.fileModel);
 	            var modelSetter = model.assign;
-	            
+
+	        	//alert(attrs.fileModel);
 	            element.bind('change', function(){
 	                scope.$apply(function(){
 	                    modelSetter(scope, element[0].files[0]);
@@ -38,7 +39,7 @@
 	    var fileUpload = {};
 
 	    fileUpload.order = {};
-	    fileUpload.error ={};
+	    fileUpload.errordata ={};
 		
 		var that = this;
 		this.datafile1=12345;
@@ -51,16 +52,18 @@
 	            headers: {'Content-Type': undefined}
 	        })
 	        .success(function(data){
-	            //alert('Order data saved successfully to the system. Order Id=' + data.id);
+	            //alert(data.id);
+	            //alert('data.error=' + data.error);
 	            fileUpload.order = data;
 	            return fileUpload.order;
 	            
 	        })
 	        .error(function(error_data){
 	            alert('Error occured while saving the order into the system!');
-	            fileUpload.error = {'Error':
-	            	'Error occured while saving the order into the system!'};
-	            return fileUpload.error;
+	            alert(error_data);
+	            fileUpload.errordata = {"error":true,
+	            	"errorMsg":"Error occured while saving the order into the system!"};
+	            return fileUpload.errordata;
 
 	        });
 	        
@@ -73,6 +76,7 @@
 
         $scope.xxx =  fileUpload.datafile1;
         $scope.orderdata={};
+        $scope.errors=false;
 	    $scope.uploadFile = function(){
 	    	//alert('entered');
 	        var file = $scope.myFile;
@@ -81,10 +85,27 @@
 	        var uploadUrl = CONTEXT_PATH + 'createOrder.do';
 	        $scope.orderdata =  fileUpload.uploadFileToUrl(file, uploadUrl);
 
-	        //$scope.serv = fileUpload;
-	        //$scope.data1 =  fileUpload.datafile;
-	        //alert ('$scope.fileinfo, id=' + $scope.orderdata.order.id);
+	        /*
+	        if ($scope.orderdata.error != undefined) {
+	        	alert('! undefined');
+	        	$scope.errors=true;
+	        }
+	        if ($scope.orderdata.error){
+	        	alert("error happened . $scope.orderdata.error=" + $scope.orderdata.error);
+	        }
+	        if ($scope.orderdata['error']) {
+	        	alert('undefined');
+	        	alert('scope.orderdata.error = ' + $scope.orderdata.error);
 
+        		$scope.errors = true;
+
+	        	alert('scope.errors='+ $scope.errors);
+	        }
+	        if ($scope.orderdata.hasOwnProperty('error')) {
+	        	alert('errro');
+        		$scope.errors=true;
+        	} else $scope.errors=false;
+*/	
 	    };
 	    
 
@@ -108,10 +129,14 @@
 
                 responsePromise.success(function(data, status, headers, config) {
 
-                	if (data.hasOwnProperty('ERROR')) $scope.errors=true;
-                	else   	$scope.dataLoaded = true;
-                	                	
-                    $scope.myData = data;
+                	if (data.hasOwnProperty('error')) {
+                		$scope.errors=true;
+                		$scope.error=data;
+                		$scope.dataLoaded = false;
+                	}else   	{
+                		$scope.dataLoaded = true;
+                	}
+                	$scope.orderid = data.id;
                     $scope.lines = data.lines;
                     $scope.fromAddress =data.from;
                     $scope.toAddress =data.to;
@@ -121,13 +146,15 @@ $scope.sortingOrder = sortingOrder;
 $scope.sortedItems = [];
 $scope.reverse = false;
 $scope.groupedItems = [];
-$scope.rowsPerPage = 5;
+$scope.rowsPerPage = document.getElementById("pagesize").value;
 $scope.pagedItems = [];
 $scope.currentPage = 0;
 
 // init the filtered items
 $scope.init = function () {
 
+	if ( $scope.errors) return;
+	
     $scope.sortedItems = $scope.lines;
     //alert($scope.sortedItems.length);
     // take care of the sorting order
