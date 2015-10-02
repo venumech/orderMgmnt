@@ -12,7 +12,7 @@
 
 </head>
 
-<body ng-app="myapp">
+<body ng-app="orderApp">
    <form name="orderForm">
     <script type="text/javascript">
         var sortingOrder = 'product'; //default sorting order for displayig the search result
@@ -22,7 +22,7 @@
     <p class="bg-primary">
 	<img src="resources/core/images/order.JPG" class="img-responsive pull-right" />
 	</p>
-    <div ng-controller="MyController">    
+    <div ng-controller="SearchController">    
     <div id="radioBtnDiv">
         <table width="100%">
            <tr>

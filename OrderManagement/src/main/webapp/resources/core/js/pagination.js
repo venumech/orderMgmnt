@@ -1,15 +1,15 @@
- var myApp = angular.module("myapp", []);
+ var myApp = angular.module("orderApp", []);
  
  var controllers = {};
  /*
  myApp.config(function($routeProvider){
 	 $routeProvider
 	 		.when('/',
-	 				{controller: 'MyController',
+	 				{controller: 'SearchController',
 	 				  templateUrl:'create.jsp'
 	 				})
 	 			.when('/create',
-	 		 			{controller: 'MyController',
+	 		 			{controller: 'SearchController',
 	 		 			  templateUrl: 'search.jsp'
 	 		 			})
 	 		 		.otherwise({redirectTo: 'create.html'});
@@ -113,13 +113,13 @@
 	}]);
 	
 	/*---------------------------------------order search controller----------------------------------------*/
-	myApp.controller("MyController", ['$scope', '$http', '$filter', function($scope, $http, $filter) {
+	myApp.controller("SearchController", ['$scope', '$http', '$filter', function($scope, $http, $filter) {
             $scope.myData = {};
             $scope.action = {
                     flag: true
                   };
             $scope.myData.doClick = function(item, event) {
-
+        		$scope.errors=false;
                 var query = document.getElementById("orderId").value;
                 // alert(query);
                // var query = 1442158639469;
@@ -244,4 +244,4 @@ $scope.sort_by = function(newSortingOrder) {
         }]);
 	
 	myApp.controller(controllers);
- //myApp.MyController.$inject = ['$scope', '$filter'];
+ //myApp.SearchController.$inject = ['$scope', '$filter'];
