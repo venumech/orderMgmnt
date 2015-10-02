@@ -1,6 +1,6 @@
 /*
 @C:\common\test_orderlookup1_sp.sql
- c:\app\venumech\product\12.1.0\dbhome_2\BIN\sqlplus venu@logistics/deek1965
+ c:\app\venumech\product\12.1.0\dbhome_2\BIN\sqlplus venu@logistics/Summer2015
 */
 CREATE OR REPLACE EDITIONABLE PROCEDURE "VENU"."TEST_ORDER_LOOKUP" 
 (chr varchar2)
@@ -11,7 +11,7 @@ AS
       to_city  ADDRESS.city%type;
       to_zip  ADDRESS.zip%type;
       to_state  ADDRESS.state%type;
-      l_col_data ORDERS.instructions%type;     -- my_table;
+      l_col_data ORDERS.instructions%type;     -- lines_table;
       instructions   ORDERS.instructions%type;
       order_id  ORDERS.id%type;
     message  varchar2(1000);
@@ -23,9 +23,9 @@ order_id := 27362;
 message  := 'x';
 to_zip := '';
 
-    --select my_object(27360, 10,30, 'N',  'FLOGAN') bulk collect into l_col_data  from dual connect by level <=4;
+    --select LINEITEM_OBJECT (27360, 10,30, 'N',  'FLOGAN') bulk collect into l_col_data  from dual connect by level <=4;
 
-    -- select my_object(order_id , weight, volume, hazard, product)  bulk collect  into l_col_data from line_items;
+    -- select LINEITEM_OBJECT(order_id , weight, volume, hazard, product)  bulk collect  into l_col_data from line_items;
 
    -- DBMS_OUTPUT.PUT_LINE(l_col_data(1).order_id || ' ' || l_col_data(1).product); -- display details
     --DBMS_OUTPUT.PUT_LINE(l_col_data.count);

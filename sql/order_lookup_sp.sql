@@ -1,7 +1,6 @@
 /*
- @C:\common\order_lookup.sql
- c:\app\venumech\product\12.1.0\dbhome_2\BIN\sqlplus venu@logistics/deek1965
- Retrieve the data from tables for the given order_id
+ @C:\common\order_lookup_sp.sql
+ Retrieve the data from tables for the given order_id.
  PLSQL types can't be accessed directly from java. we will have to use a true SQL type (CREATE type...) 
  and either a wrapper procedure with this SQL type or modify your procedure to accept the new type
 */
