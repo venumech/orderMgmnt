@@ -36,9 +36,12 @@ import oracle.sql.TypeDescriptor;
 @Repository("orderDao")
 
 public class OrderDBHelper implements OrderDBInfc{
- 
+	 
 	@Value("${oracle.db.driver}")
 	private String oraDriver;
+
+	@Value("${oracle.db.url}")
+	private String oraUrl;
 
 	@Value("${oracle.user}")
 	private String oraUser;
@@ -57,7 +60,7 @@ public class OrderDBHelper implements OrderDBInfc{
 		     + " and a.to_address_id = c.address_id"
 		     + " and a.id = ";
   
-    public Order dataInsert(Order o) throws SQLException{
+    public Order saveId(Order o) throws SQLException{
      	Long id = dataInsertWork(o);
     	o.setId(id);
     	return o;
@@ -70,7 +73,7 @@ public class OrderDBHelper implements OrderDBInfc{
         String message = "";
 
          //URL of Oracle database server
-         String url = oraDriver; //"jdbc:oracle:thin:@localhost:1521:LOGISTICS"; 
+         String url = oraUrl; //"jdbc:oracle:thin:@localhost:1521:LOGISTICS"; 
        
          //properties for creating connection to Oracle database
          Properties props = new Properties();
@@ -172,7 +175,7 @@ public class OrderDBHelper implements OrderDBInfc{
 	
 	    order.setId(orderId);
 	     //URL of Oracle database server
-	     String url = oraDriver; //"jdbc:oracle:thin:@localhost:1521:LOGISTICS"; 
+	     String url = oraUrl; //"jdbc:oracle:thin:@localhost:1521:LOGISTICS"; 
 
 	     //properties for creating connection to Oracle database
 	     Properties props = new Properties();
@@ -262,58 +265,48 @@ public class OrderDBHelper implements OrderDBInfc{
 	    * search database for a given order id
 	    */
 	@SuppressWarnings("deprecation")
-	public Order lookUpDB(Long orderId) throws SQLException {
-		
-		logger.debug("DriverManager constructed===================================================================" + oraUser);
+	public Order findById(Long orderId) throws SQLException {
 
-		logger.debug("Entered OrderDBHelper.lookUpDB()");
-	    Order order = new Order();
-		String message="";
-	
-	    order.setId(orderId);
-	     //URL of Oracle database server
-	     String url = oraDriver; //"jdbc:oracle:thin:@localhost:1521:LOGISTICS"; 
-	
-	     //properties for creating connection to Oracle database
-	     Properties props = new Properties();
-	     props.setProperty("user", oraUser);
-	     props.setProperty("password", oraPwd);
-	
-	     //creating connection to Oracle database using JDBC
-	     Connection conn;
-		 conn = DriverManager.getConnection(url,props);
-		logger.debug("DriverManager loaded." + oraUser);
-	
-	
-	     //creating PreparedStatement object to execute query
-	         CallableStatement cstmt =null;
-	     	
-		     Address fromAddress = new Address();
-		     Address toAddress = new Address();
-		     List<LineItem> lineitems = new ArrayList<LineItem>();	         
+		logger.debug("Entered OrderDBHelper.findById()");
+		Order order = new Order();
+		String message = "";
+
+		order.setId(orderId);
+		// URL of Oracle database server
+		String url = oraUrl; // "jdbc:oracle:thin:@localhost:1521:LOGISTICS";
+
+		// properties for creating connection to Oracle database
+		Properties props = new Properties();
+		props.setProperty("user", oraUser);
+		props.setProperty("password", oraPwd);
+
+
+		// creating connection to Oracle database using JDBC
+		Connection conn = null;
+
+		// creating PreparedStatement object to execute query
+		CallableStatement cstmt = null;
+
+		Address fromAddress = new Address();
+		Address toAddress = new Address();
+		List<LineItem> lineitems = new ArrayList<LineItem>();
 
 		try {
+			//load driver into classpath
+			Class.forName(oraDriver);
+			logger.debug("Trying Oracle Connection ===================================================================; Ora User" + oraUser
+					+ oraUser);
+			conn = DriverManager.getConnection(url, props);
+			logger.debug("Connection successful; Ora User" + oraUser);
+
 			conn = DriverManager.getConnection(url, props);
 
 			// creating PreparedStatement object to execute query
 			// PreparedStatement preStatement = conn.prepareStatement(sql);
 			cstmt = conn.prepareCall("begin " + "VENU.ORDER_PROCESS_LOOKUP(:1,:2,:3,:4,:5,:6); end;");
-			
+
 			logger.debug("Callable statement prepared.");
 			cstmt.registerOutParameter(1, Types.VARCHAR); // instructions
-			// cstmt.registerOutParameter(8, Types.CHAR); //fake
-			// cstmt.registerOutParameter(8, OracleTypes.OPAQUE,"SYS.ANYTYPE"); //l_col_data
-			// cstmt.registerOutParameter(8, OracleTypes.JAVA_OBJECT,"SYS.ANYTYPE"); //l_col_data
-			// cstmt.registerOutParameter(8, OracleTypes.JAVA_STRUCT,"SYS.ANYTYPE"); //l_col_data
-			// cstmt.registerOutParameter(8, OracleTypes.STRUCT,"SYS.ANYTYPE"); //l_col_data
-			// cstmt.registerOutParameter(8, OracleTypes.PLSQL_INDEX_TABLE,"SYS.ANYTYPE"); //l_col_data
-			// cstmt.registerOutParameter(8, OracleTypes.OTHER,"SYS.ANYTYPE"); //l_col_data: invalid column type
-			// cstmt.registerOutParameter(8, Types.JAVA_OBJECT,"SYS.ANYTYPE"); //l_col_data: java.sql.SQLException: Invalid column type: 2000
-			// cstmt.registerOutParameter(8, Types.STRUCT,"SYS.ANYTYPE"); //l_col_data: PLS-00306: wrong number or types of arguments in call to 'ORDER_PROCESS_LOOKUP'
-			// cstmt.registerOutParameter(8, Types.REF_CURSOR,"SYS.ANYTYPE"); //l_col_data: java.sql.SQLException: Invalid column type: 2012
-			// cstmt.registerOutParameter(8, Types.REF,"SYS.ANYTYPE"); //l_col_data: PLS-00306: wrong number or types of arguments in call to 'ORDER_PROCESS_LOOKUP'
-			// cstmt.registerOutParameter(8, Types.OTHER,"SYS.ANYTYPE"); //l_col_data: java.sql.SQLException: Invalid column type: 1111
-			// cstmt.registerOutParameter(8, OracleTypes.OPAQUE,"SYS.ANYTYPE"); //l_col_data: wrong number or types of arguments in call to 'ORDER_PROCESS_LOOKUP'
 			cstmt.registerOutParameter(2, OracleTypes.ARRAY, "MY_TABLE"); // l_col_data:
 			cstmt.registerOutParameter(3, OracleTypes.STRUCT, "ADDRESS_OBJ"); // from_address
 			cstmt.registerOutParameter(4, OracleTypes.STRUCT, "ADDRESS_OBJ"); // to_address
@@ -332,47 +325,23 @@ public class OrderDBHelper implements OrderDBInfc{
 
 				lI = new LineItem(((BigDecimal) cols[0]).doubleValue(), ((BigDecimal) cols[1]).doubleValue(),
 						cols[2].equals("Y") ? true : false, cols[3].toString());
-				
-				 //for (Object col : cols) { System.out.print(col);	}
-				
+
+				// for (Object col : cols) { System.out.print(col); }
+
 				lineitems.add(lI);
 			}
-			
+
 			ResultSetMetaData metaData = null;
-			// TypeDescriptor td = (TypeDescriptor) cstmt.getObject(9);
-			/*
-			 * //Address st = (Address) cstmt.getObject(9); //TypeDescriptor td
-			 * = TypeDescriptor.getTypeDescriptor("ADDRESS_OBJ",
-			 * (OracleConnection) conn); TypeDescriptor td = (TypeDescriptor)
-			 * cstmt.getObject(8); td =
-			 * TypeDescriptor.getTypeDescriptor("MY_TABLE", (OracleConnection)
-			 * conn); td.getTypeCode(); short typeCode =
-			 * td.getInternalTypeCode(); if (typeCode ==
-			 * TypeDescriptor.TYPECODE_JDBC_ARRAY) { // check if it's a
-			 * transient type if (td.isTransient()) { AttributeDescriptor[]
-			 * attributes = ((StructDescriptor) td).getAttributesDescriptor();
-			 * for (int i = 0; i < attributes.length; i++)
-			 * System.out.println(attributes[i].getAttributeName()); } else {
-			 * System.out.println(td.getTypeName());
-			 * System.out.println(td.getTypeCodeName()); } }
-			 */
 
 			logger.debug("Extracting source Address.");
 			Object[] data = (Object[]) ((STRUCT) cstmt.getObject(3)).getAttributes();// getOracleAttributes();
 			fromAddress = new Address(data[0].toString(), data[1].toString(), data[2].toString());
-			
+
 			logger.debug("Extracting destination Address.");
 
 			data = (Object[]) ((STRUCT) cstmt.getObject(4)).getAttributes();// getOracleAttributes();
 			toAddress = new Address(data[0].toString(), data[1].toString(), data[2].toString());
-			/*
-			 * for(Object tmp : data) { Struct row = (Struct) tmp ; //
-			 * Attributes are index 1 based... int idx = 1;
-			 * 
-			 * for(Object attribute : row.getAttributes()) {
-			 * System.out.println(metaData.getColumnName(idx) + " = " +
-			 * attribute); ++idx; } System.out.println(tmp); }
-			 */
+
 			String instructions = cstmt.getString(1);
 			Long id = cstmt.getLong(5);
 
@@ -381,25 +350,10 @@ public class OrderDBHelper implements OrderDBInfc{
 			order.setInstructions(instructions);
 			order.setLines(lineitems);
 			order.setId(id);
-			/*
-			 * oracle.sql.STRUCT tdz = (oracle.sql.STRUCT)cstmt.getObject(8);
-			 * Object[] x = tdz.getAttributes(); LineItem lI = new LineItem();
-			 * Double weighta= (double) (x[0]); lI.setWeight(weighta); //
-			 * ntd.name = (String)x[1]; System.out.println(weighta); //
-			 * System.out.println(ntd.name); cstmt.close();
-			 * 
-			 * td = (TypeDescriptor) cstmt.getObject(8); short typeCode =
-			 * td.getInternalTypeCode(); logger.debug("typeCode=" + typeCode);
-			 * if(typeCode == TypeDescriptor.TYPECODE_OBJECT) { // check if it's
-			 * a transient type if(td.isTransient()) { AttributeDescriptor[]
-			 * attributes = ((StructDescriptor)td).getAttributesDescriptor();
-			 * for(int i=0; i<attributes.length; i++)
-			 * System.out.println(attributes[i].getAttributeName()); } else {
-			 * System.out.println(td.getTypeName()); } }
-			 */
+
 			logger.debug("'Order' object constructed with the data.");
 
-		} catch (SQLException e) {
+		} catch (SQLException | ClassNotFoundException e) {
 			System.out.println(e.getMessage());
 			throw new SQLException("ERROR: " + e.getMessage());
 		} finally {
@@ -407,15 +361,13 @@ public class OrderDBHelper implements OrderDBInfc{
 				cstmt.close();
 			if (conn != null)
 				conn.close();
-		} 
-		
-		logger.debug("done: Order id = "+ orderId);
-		
-		//logger.debug(order.toString());
-	
-	    return order;
-	
-	 }
+		}
+
+		logger.debug("done: Order id = " + orderId);
+
+		return order;
+
+	}
 
 
 }

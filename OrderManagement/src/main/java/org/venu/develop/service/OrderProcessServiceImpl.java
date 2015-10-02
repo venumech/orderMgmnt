@@ -37,7 +37,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 	@Override
 	public Order saveOrder(MultipartFile mFile) throws IOException, SQLException {
 		Order order = orderParser.parse(mFile);
-		order = orderDao.dataInsert(order);
+		order = orderDao.saveId(order);
 		lruCache.put(order.getId(), order);
 		logger.debug("the order object is added to server side local cache! cache.size= " + lruCache.size());
 		return order;
@@ -54,7 +54,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 			
 		}else {
 			logger.debug("the order object is not in cache! Now, attepting to fetch from database.");
-			order = orderDao.lookUpDB(orderId);
+			order = orderDao.findById(orderId);
 			lruCache.put(order.getId(), order);
 		}
 

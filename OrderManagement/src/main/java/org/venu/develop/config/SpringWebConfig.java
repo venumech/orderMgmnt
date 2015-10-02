@@ -13,19 +13,28 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
- 
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
 @EnableWebMvc //<mvc:annotation-driven />
 @Configuration
 @PropertySource("classpath:application.properties")
 @ComponentScan(basePackages = { "org.venu.develop.*" })
 public class SpringWebConfig extends WebMvcConfigurerAdapter {
  
-	 
-		//user
-		@Value("${oracle.user}")
-		private String dbUser;
-	 
-		//1.2.3.4
+
+	//ora driver
+	@Value("${oracle.db.driver}")
+	private String oraDriver;
+
+	//ora url
+	@Value("${oracle.db.url}")
+	private String oraUrl;
+	//ora user
+	@Value("${oracle.user}")
+	private String dbUser;
+ 
+		//Ora pwd
 		@Value("${oracle.password}")
 		private String dbPwd;
 		
@@ -35,6 +44,27 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
                         .addResourceLocations("/resources/");
 	}
  
+	/*
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driver}"></property>
+		<property name="url" value="${jdbc.url}"></property>
+		<property name="username" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+	</bean>
+	*/
+	
+	@Bean
+	public DriverManagerDataSource dataSource (){
+		DriverManagerDataSource dataSource
+		                             = new DriverManagerDataSource();
+		dataSource.setDriverClassName(oraDriver);
+		dataSource.setUrl(oraUrl);
+		dataSource.setUsername(dbUser);
+		dataSource.setPassword(dbPwd);
+		return dataSource;
+		
+	};
+	
 	@Bean
 	public InternalResourceViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver 

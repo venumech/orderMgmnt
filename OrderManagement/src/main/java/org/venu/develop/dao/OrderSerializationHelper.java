@@ -49,7 +49,7 @@ public class OrderSerializationHelper implements OrderDBInfc{
 	
 	
 	@Override
-	public Order lookUpDB(Long orderId) throws IOException, ClassNotFoundException{
+	public Order findById(Long orderId) throws IOException, ClassNotFoundException{
 		Order order = null;
 		try {
 			FileInputStream fileIn = new FileInputStream(SERIALIZED_DATA_LOCATION + orderId + ".ser");
@@ -79,7 +79,7 @@ public class OrderSerializationHelper implements OrderDBInfc{
 	 * saves the order object to the disk as mentioned in the folder: 'SERIALIZED_DATA_LOCATION'
 	 */
 	@Override
-	public Order dataInsert(Order order) throws IOException {
+	public Order saveId(Order order) throws IOException {
 		long orderId =  System.currentTimeMillis(); 
 		order.setId(orderId);
 		logger.debug("dataInsert() is started!");
