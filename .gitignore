@@ -3,6 +3,9 @@
 *.settings/
 *.gradle
 *.project
+.metadata/
+.recommenders/
+demo/
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
@@ -10,7 +13,7 @@
 application.proprties
 
 # Package Files #
-
+*.jar
 *.war
 *.ear
 bin/
