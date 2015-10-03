@@ -222,7 +222,8 @@ $scope.sort_by = function(newSortingOrder) {
 
     $scope.sortingOrder = newSortingOrder;
 
-  //after changing the sort order reset the entire array aligned to the new sort order or sort element orderby
+  // After changing the sort order reset the entire array aligned 
+  // to the new sort order or sort element orderby
     $scope.init();
 };
 

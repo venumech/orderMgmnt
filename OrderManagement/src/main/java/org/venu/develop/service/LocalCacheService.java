@@ -1,8 +1,13 @@
 package org.venu.develop.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.collections.MapIterator;
 import org.apache.commons.collections.map.LRUMap;
@@ -110,6 +115,7 @@ public class LocalCacheService<K, T> {
 		}
 	}
 
+	
 	public void remove(K key) {
 		synchronized (cacheMap) {
 			cacheMap.remove(key);
@@ -154,6 +160,53 @@ public class LocalCacheService<K, T> {
 		}
 	}
 
+	/*
+	 * retrieve all the cacheMap items
+	 */
+	@SuppressWarnings("unchecked")
+	public <K, T> List<Long> getAll1() {
+
+		List<Long> orderIdList = new ArrayList<Long>();
+		synchronized (cacheMap) {
+			if (cacheMap.size() == 0)
+				System.out.println(" No elements to print....");
+			else {
+				System.out.println("printing ....Now size=" + cacheMap.size());
+
+				TreeSet<K> keys = (TreeSet<K>) cacheMap.keySet();
+
+				orderIdList.addAll((Collection<? extends Long>) keys);
+				System.out.println();
+			}
+
+			return orderIdList;
+		}
+	}
+	
+	/*
+	 * returns all the order id values in the cache
+	 */
+	@SuppressWarnings("unchecked")
+	public List<K>  getAll() {
+
+		Set<K> keys = new HashSet<K>();
+		List<K> idList = new ArrayList<K>();
+		synchronized (cacheMap) {
+			if (cacheMap.size() == 0)
+				System.out.println(" No elements to print....");
+			else {
+				System.out.println("printing ....Now size=" + cacheMap.size());
+				keys = cacheMap.keySet();
+				idList.addAll(keys);
+			}
+
+			return idList;
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * used for debug the app.
 	 * 

@@ -2,6 +2,8 @@ package org.venu.develop.web;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +60,7 @@ public class OrderController {
     @RequestMapping(value = "/order.do", method = RequestMethod.GET)
     public String index(Model model, WebRequest webRequest) {
         //return "FileUpload";
-    	return "order";
+    	return "orderJQ";
     }
     
     @RequestMapping(value = "/createOrder.do", method = RequestMethod.POST)
@@ -152,6 +154,19 @@ public class OrderController {
     		
         return jsonObj;
     }
+    
+    /*
+     * autocomplete feature added.
+     * This is to send the matched order ids to the browser client 
+     */
+    
+    @RequestMapping(value = "/getMatchedIds.do", method = RequestMethod.GET)
+        public @ResponseBody List<String> getMachedNames(@RequestParam("term") String query){
+        
+        List<String> matchedIds = orderProcessServiceImpl.getAutoCompleteList(query);
+        
+        return matchedIds;
+        }
 
 
 
