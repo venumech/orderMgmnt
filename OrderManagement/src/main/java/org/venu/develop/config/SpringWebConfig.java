@@ -1,6 +1,7 @@
 package org.venu.develop.config;
 
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,6 +14,10 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+import org.venu.develop.dao.OrderDBInfc;
+import org.venu.develop.dao.OrderDao;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -44,7 +49,10 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
                         .addResourceLocations("/resources/");
 	}
  
-	/*
+	/* this(spring's) is for testing purposes only. not good for multiple request scenarios in production systems
+	 * 
+	 */
+	/* 
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="${jdbc.driver}"></property>
 		<property name="url" value="${jdbc.url}"></property>
@@ -64,6 +72,43 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		return dataSource;
 		
 	};
+	
+	/*
+	 * for real time deployments
+	 */
+	/*	
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${jdbc.driverClassName}"/>
+    <property name="url" value="${jdbc.url}"/>
+    <property name="username" value="${jdbc.username}"/>
+    <property name="password" value="${jdbc.password}"/>
+    </bean>
+	 */
+	@Bean
+	public BasicDataSource apacheDataSource() {
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setDriverClassName(oraDriver);
+		dataSource.setUrl(oraUrl);
+		dataSource.setUsername(dbUser);
+		dataSource.setPassword(dbPwd);
+		return dataSource;		
+	};
+	
+	@Bean
+	public JdbcTemplate jdbcOperations() {
+	    return new JdbcTemplate(apacheDataSource());
+	}
+
+	
+	@Bean
+    public OrderDBInfc getOrderDao() {
+		//OrderDao od = new OrderDao();
+		//od.setJdbcTemplate((JdbcTemplate) jdbcOperations());
+        return new OrderDao(apacheDataSource());
+    }
+	
+	
+	
 	
 	@Bean
 	public InternalResourceViewResolver viewResolver() {
