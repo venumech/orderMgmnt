@@ -212,7 +212,7 @@ $scope.setPage = function () {
     $scope.currentPage = this.n;
 };
 
-// functions have been describe process the data for display
+// functions have been described to process the data for display
 $scope.init();
 
 // change sorting order

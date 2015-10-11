@@ -5,7 +5,7 @@ apply plugin: 'eclipse-wtp'
 apply plugin: 'org.akhikhl.gretty'
 //apply plugin: 'net.franz-becker.gradle-lombok' //TODO
  
-// JDK 7
+// JDK 8
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
  
@@ -42,6 +42,8 @@ dependencies {
         compile group: 'org.apache.commons', name: 'commons-lang3', version:'3.4'
         //compile group: 'com.oracle', name: 'ojdbc14', version:'10.2.0.4.0'
         compile group: 'org.apache.commons', name: 'commons-io', version:'1.3.2'
+        compile 'org.apache.commons:commons-dbcp2:2.1.1'
+        
 
 	
     //include in compile only, exclude in the war

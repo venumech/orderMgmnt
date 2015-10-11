@@ -39,14 +39,6 @@ import com.google.gson.Gson;
 public class OrderController {
 
 	private final Logger logger = LoggerFactory.getLogger(OrderController.class);
-/*
-	@Autowired
-	private  OrderDBHelper orderDBHelper;
-	
-	public OrderController(OrderDBHelper orderDBHelper) {
-		this.orderDBHelper = orderDBHelper;
-	}
-*/
 
 	@Autowired
 	private  OrderProcessService orderProcessServiceImpl;
@@ -59,8 +51,11 @@ public class OrderController {
 
     @RequestMapping(value = "/order.do", method = RequestMethod.GET)
     public String index(Model model, WebRequest webRequest) {
-        //return "FileUpload";
-    	return "orderJQ";
+    	
+    	/* Toggle between "order.jsp" and "orderJQ.jsp"   	 */
+    	
+        //return "order"; //UI is Angular enabled
+    	return "orderJQ"; //UI is JQuery enabled
     }
     
     @RequestMapping(value = "/createOrder.do", method = RequestMethod.POST)
@@ -89,15 +84,15 @@ public class OrderController {
         	logger.error(new Gson().toJson(oError));
         	return  new Gson().toJson(oError);
         } else {
-
-            logger.debug("");
             logger.debug(  new Gson().toJson(order) ); //success
         }
         
-
     	return  new Gson().toJson(order);
     }
 
+    /*
+     * Search Order activity
+     */
     @RequestMapping(value = "/searchOrder.do", method = RequestMethod.GET)
     public @ResponseBody String searchOrder(@RequestParam("q") String query) {
 
@@ -110,9 +105,7 @@ public class OrderController {
 
         Long orderId = null;
         try{
-        	orderId = Long.parseLong(query);
-        	//Integer.parseInt(query);
-        	
+        	orderId = Long.parseLong(query);        	
         	logger.debug("searchOrder(): orderId =" +orderId); 
 
             //do lookup in service layer

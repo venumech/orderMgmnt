@@ -3,6 +3,7 @@
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
 <script type="text/javascript" src="resources/core/js/tree_list.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"> <!-- not to show clutter such as 'No search results found'  -->
 <!-- <link rel="stylesheet" type="text/css" href="resources/core/tree_list.css">
 -->
 
@@ -184,6 +185,9 @@ function prepareList() {
     .children('ul').hide();
 }
 </script>
+    <p class="bg-primary">
+	<img src="resources/core/images/order.JPG" class="img-responsive pull-right" />
+	</p>
 <form:form class="form-horizontal" action="/order" method="post">
 	<br><center><h1><font color="blue">Order Process</font></h1></center><br>
     <table width="500px">

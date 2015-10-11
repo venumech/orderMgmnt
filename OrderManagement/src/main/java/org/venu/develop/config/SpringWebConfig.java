@@ -69,6 +69,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		dataSource.setUrl(oraUrl);
 		dataSource.setUsername(dbUser);
 		dataSource.setPassword(dbPwd);
+		
 		return dataSource;
 		
 	};
@@ -91,12 +92,15 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		dataSource.setUrl(oraUrl);
 		dataSource.setUsername(dbUser);
 		dataSource.setPassword(dbPwd);
+		dataSource.setMaxConnLifetimeMillis(10000);
+		dataSource.setMaxWaitMillis(10000);
+		
 		return dataSource;		
 	};
 	
 	@Bean
 	public JdbcTemplate jdbcOperations() {
-	    return new JdbcTemplate(apacheDataSource());
+	    return new JdbcTemplate(dataSource());
 	}
 
 	
@@ -104,7 +108,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
     public OrderDBInfc getOrderDao() {
 		//OrderDao od = new OrderDao();
 		//od.setJdbcTemplate((JdbcTemplate) jdbcOperations());
-        return new OrderDao(apacheDataSource());
+        return new OrderDao(dataSource());
     }
 	
 	

@@ -9,9 +9,7 @@ import java.io.ObjectOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
 import org.venu.develop.model.Order;
-import org.venu.develop.web.OrderController;
 
 //@Repository("orderDao")
 public class OrderSerializationHelper implements OrderDBInfc{
@@ -47,7 +45,12 @@ public class OrderSerializationHelper implements OrderDBInfc{
 		
 	}
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see org.venu.develop.dao.OrderDBInfc#findById(java.lang.Long)
+	 * The Order file will get deserialized.
+	 * first , locate the serialized file in the disk space.
+	 */
 	@Override
 	public Order findById(Long orderId) throws IOException, ClassNotFoundException{
 		Order order = null;
@@ -76,6 +79,7 @@ public class OrderSerializationHelper implements OrderDBInfc{
 	/*
 	 * (non-Javadoc)
 	 * @see org.venu.develop.dao.OrderDBInfc#dataInsert(org.venu.develop.model.Order)
+	 * the Order graph is serialized.
 	 * saves the order object to the disk as mentioned in the folder: 'SERIALIZED_DATA_LOCATION'
 	 */
 	@Override
@@ -91,7 +95,6 @@ public class OrderSerializationHelper implements OrderDBInfc{
 				fileOut.close();
 				logger.debug("Serialized data is saved in '" + SERIALIZED_DATA_LOCATION + "'. orderId="+ order.getId()+".ser");
 			} catch (IOException e) {
-				//throw new IOException(e.getMessage());
 				logger.error("ERROR: order not saved. " + e.getMessage());
 				throw new IOException(e.getMessage());
 			}
