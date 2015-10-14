@@ -32,7 +32,7 @@ import org.venu.develop.model.Order;
  * @author venu
  */
 
-@Repository("orderDao")
+//@Repository("orderDao")
 public class OrderDBHelperVersion1 implements OrderDBInfc {
 
 	@Value("${oracle.db.driver}")
@@ -126,13 +126,23 @@ public class OrderDBHelperVersion1 implements OrderDBInfc {
 			String sqlStr = sqlLookUp + orderId;
 			System.out.println(sqlStr);
 			pstmt = conn.prepareStatement(sqlStr);
-			logger.debug(" done the PreparedStatement");
+			logger.debug(" done the PreparedStatement and executing the query");
 
 			
 			Address fromAddress = new Address();
 			Address toAddress = new Address();
 			List<LineItem> lineitems = new ArrayList<LineItem>();
 			ResultSet rs = pstmt.executeQuery();
+			
+			if (rs != null && rs.wasNull()) {
+				String error= " The Order Id : " + orderId + " does not Exists in the System";
+				logger.debug("ERROR: "+ error);
+				throw new SQLException("ERROR: " + error);
+			} else {
+				logger.debug("rs == null ");
+			}
+			
+			
 			String str = "";
 			Double val = 0d;
 			logger.debug(" Reading the resultSet");

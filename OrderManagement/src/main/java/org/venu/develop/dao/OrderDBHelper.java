@@ -41,7 +41,7 @@ import oracle.sql.TypeDescriptor;
  *   file: order_lookup.sql, SP name: ORDER_PROCESS_LOOKUP
   * @author venu
   */
-//@Repository("orderDao")
+@Repository("orderDao")
 public class OrderDBHelper implements OrderDBInfc{
 	 
 	@Value("${oracle.db.driver}")
@@ -58,32 +58,18 @@ public class OrderDBHelper implements OrderDBInfc{
  
 	private final Logger logger = LoggerFactory.getLogger(OrderDBHelper.class);
 
-	private static final String sqlLookUp = 
-		     "Select a.id, instructions, b.city as from_city, b.state as from_state, b.zip as from_zip,"
-		     + " c.city as to_city, c.state as to_state, c.zip as to_zip,"
-		     + " my_object(order_id , weight, volume, hazard, product) as ob "
-		     + " from ORDERS a, (select * from ADDRESS) b, (select * from ADDRESS) c, LINE_ITEMS d"
-		     + " where a.id = d.order_id and a.from_address_id = b.address_id"
-		     + " and a.to_address_id = c.address_id"
-		     + " and a.id = ";
-  
-    public Order saveId(Order o) throws SQLException{
-     	Long id = dataInsertWork(o);
-    	o.setId(id);
-    	return o;
-    	
-    }
-    
-	private Long dataInsertWork(Order order) throws SQLException {
+	public Order saveId(Order order) throws SQLException{
+
 
 		Long orderId = 0l;
 		String message = "";
-		String ORACLE_ARRAY = "LINES_TABLE";
-		String ORACLE_STRUCT = "ADDRESS_OBJ";
-		StructDescriptor fromStructDescriptor = null;
-		StructDescriptor toStructDescriptor = null;
-		StructDescriptor structDescriptor = null;
-		ArrayDescriptor arrayDescriptor = null;
+		String ORACLE_ARRAY = "LINES_TABLE"; //ADDRESS_OBJ --> Collection of Oracle custom type
+		String ORACLE_STRUCT = "ADDRESS_OBJ"; //ADDRESS_OBJ --> Oracle custom type
+		
+		StructDescriptor fromStructDescriptor = null; //from address 
+		StructDescriptor toStructDescriptor = null; //TO Address
+		StructDescriptor structDescriptor = null; //LineItem
+		ArrayDescriptor arrayDescriptor = null; //LineItems: Array of 'structDescriptor'
 		int iSize = order.getLines().size();
 		// URL of Oracle database server
 		String url = oraUrl; // "jdbc:oracle:thin:@localhost:1521:LOGISTICS";
@@ -97,19 +83,16 @@ public class OrderDBHelper implements OrderDBInfc{
 		Connection conn = null;
 		CallableStatement cstmt = null;
 
-		/////////////////////////////////////
-		/////////////////////////////////////
-
 		try {
 			// load driver into classpath
 			Class.forName(oraDriver);
 
 			conn = DriverManager.getConnection(url, props);
-			TypeDescriptor td = null;
+
 			fromStructDescriptor = StructDescriptor.createDescriptor(ORACLE_STRUCT, conn.getMetaData().getConnection());
 			toStructDescriptor = StructDescriptor.createDescriptor(ORACLE_STRUCT, conn.getMetaData().getConnection());
 
-			structDescriptor = StructDescriptor.createDescriptor("LINEITEM_OBJECT", conn.getMetaData().getConnection());
+			structDescriptor = StructDescriptor.createDescriptor("LINEITEM_OBJECT", conn.getMetaData().getConnection()); //LINEITEM_OBJECT --> Oracle custom type
 			arrayDescriptor = ArrayDescriptor.createDescriptor(ORACLE_ARRAY, conn.getMetaData().getConnection()); // creating
 																													// PreparedStatement
 
@@ -158,11 +141,18 @@ public class OrderDBHelper implements OrderDBInfc{
 			cstmt.setString(4, order.getInstructions());
 
 			cstmt.execute();
+			
+			message = cstmt.getString(6); //get the message returned by the stored proc.
+			
+			if (message != null ) {
+				logger.debug("'Order' error. " + message);
+				throw new SQLException( message);				
+			}			
 			orderId = cstmt.getLong(5);
-			message = cstmt.getString(6);
+			order.setId(orderId);
 		} catch (SQLException | ClassNotFoundException e) {
-			System.out.println("order not processed in database. " + message);
-			System.out.println(e.getMessage());
+			logger.warn("order not processed in database. " + message);
+			logger.error(e.getMessage());
 
 			throw new SQLException("ERROR: " + e.getMessage());
 		} finally {
@@ -178,137 +168,11 @@ public class OrderDBHelper implements OrderDBInfc{
 
 		System.out.println("done: Order id = " + orderId);
 
-		return orderId;
+		return order;
 
 	}
     
     /*
-     * Dynamic sql generation. this is for inserting line items into databse as the number
-     *  of line items for a each of the orders keep varies.
-     * There are many ways to do but quick way is here
-     */
-    private String buildLineItemsSQL (List<LineItem> lineItems) {
-    	StringBuilder sql = new StringBuilder();
-    	sql.append ("INSERT ALL " );
-    	for (LineItem lineitem: lineItems){ 
-    		Boolean bl = lineitem.getHazard();
-    		String hazard_str = "'N'";
-    		 
-    		if (bl ==null)
-    			hazard_str = "null";
-    		else if (bl){
-    			hazard_str="'Y'";
-    		}
-        	sql.append ("INTO LINE_ITEMS (order_id , weight, volume, hazard, product ) ");
-    		sql.append ("VALUES (:order_id_val, ");	
-    		sql.append(lineitem.getWeight() +", ");
-    		sql.append(lineitem.getVolume() +", ");
-    		sql.append(hazard_str +", ");
-    		sql.append("'"+lineitem.getProduct() +"') ");    		
-    	}
-    	sql.append("SELECT 1 FROM dual");
-    	
-    	System.out.println(sql);
-    		
-    	return sql.toString();
-    }
-
-
-	public Order lookUpDBBKUP(Long orderId) throws SQLException {
-		
-	    Order order = new Order();
-		int rowCount=0;
-	
-	    order.setId(orderId);
-	     //URL of Oracle database server
-	     String url = oraUrl; //"jdbc:oracle:thin:@localhost:1521:LOGISTICS"; 
-
-	     //properties for creating connection to Oracle database
-	     Properties props = new Properties();
-	     props.setProperty("user", oraUser);
-	     props.setProperty("password", oraPwd);
-	
-	     
-	     //creating connection to Oracle database using JDBC
-	     Connection conn;
-		conn = DriverManager.getConnection(url,props);
-		logger.debug("DriverManager constructed===================================================================" + oraUser);
-
-	
-	     //creating PreparedStatement object to execute query
-			String sqlStr =  sqlLookUp + orderId ;
-			System.out.println(sqlStr);
-	     PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-	
-	
-
-	     pstmt.execute();
-	     Address fromAddress = new Address();
-	     Address toAddress = new Address();
-	     List<LineItem> lineitems = new ArrayList<LineItem>();
-	        ResultSet rs = pstmt.executeQuery();
-	        String str = "";
-	        Double val = 0d;
-	        
-	        
-	        while (rs.next()) {
-	        	rowCount++;
-	        	LineItem lineItem = new LineItem();
-	        	str = rs.getString("instructions");
-	        	order.setInstructions(str);
-	        	str = rs.getString("from_city");
-	        	fromAddress.setCity(str);
-	        	
-	        	str = rs.getString("from_state");
-	        	fromAddress.setState(str);
-	        	str = rs.getString("from_zip");
-	        	fromAddress.setZip(str);
-	        	str = rs.getString("to_city");
-	        	toAddress.setCity(str);
-	        	str = rs.getString("to_state");
-	        	toAddress.setState(str);
-	        	str = rs.getString("to_zip");
-	        	toAddress.setZip(str);
-	        	val = rs.getDouble("weight");
-	        	lineItem.setWeight(val);
-	        	val = rs.getDouble("volume");
-	        	lineItem.setVolume(val);
-	        	str = rs.getString("hazard");
-	        	lineItem.setHazard(new Boolean(str));
-	        	str = rs.getString("product");
-	        	lineItem.setProduct(str);
-
-	        	lineitems.add(lineItem);
-	        }
-	        order.setFrom(fromAddress);
-	        order.setTo(toAddress);
-	        order.setLines(lineitems);
-
-		    System.out.println("done: Order id = "+ orderId);
-		
-
-		if (rowCount ==0) {
-
-	        System.out.println("FetchSize= "+ rowCount);
-	        return null;
-		}
-		
- 			try {
-				if (pstmt !=null) pstmt.close();
-				if (conn !=null) conn.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
- 		
-		//logger.debug("rowCount=" + rowCount);
-		//logger.debug(order.toString());
-	
-	    return order;
-	
-	 }
-
-	   /*
 	    * search database for a given order id
 	    */
 	@SuppressWarnings("deprecation")
@@ -352,37 +216,10 @@ public class OrderDBHelper implements OrderDBInfc{
 
 			logger.debug("Callable statement prepared.");
 			cstmt.registerOutParameter(1, Types.VARCHAR); // instructions
-			// cstmt.registerOutParameter(8, Types.CHAR); //fake
-			// cstmt.registerOutParameter(8, OracleTypes.OPAQUE,"SYS.ANYTYPE");
-			// //l_col_data
-			// cstmt.registerOutParameter(8,
-			// OracleTypes.JAVA_OBJECT,"SYS.ANYTYPE"); //l_col_data
-			// cstmt.registerOutParameter(8,
-			// OracleTypes.JAVA_STRUCT,"SYS.ANYTYPE"); //l_col_data
-			// cstmt.registerOutParameter(8, OracleTypes.STRUCT,"SYS.ANYTYPE");
-			// //l_col_data
-			// cstmt.registerOutParameter(8,
-			// OracleTypes.PLSQL_INDEX_TABLE,"SYS.ANYTYPE"); //l_col_data
-			// cstmt.registerOutParameter(8, OracleTypes.OTHER,"SYS.ANYTYPE");
-			// //l_col_data: invalid column type
-			// cstmt.registerOutParameter(8, Types.JAVA_OBJECT,"SYS.ANYTYPE");
-			// //l_col_data: java.sql.SQLException: Invalid column type: 2000
-			// cstmt.registerOutParameter(8, Types.STRUCT,"SYS.ANYTYPE");
-			// //l_col_data: PLS-00306: wrong number or types of arguments in
-			// call to 'ORDER_PROCESS_LOOKUP'
-			// cstmt.registerOutParameter(8, Types.REF_CURSOR,"SYS.ANYTYPE");
-			// //l_col_data: java.sql.SQLException: Invalid column type: 2012
-			// cstmt.registerOutParameter(8, Types.REF,"SYS.ANYTYPE");
-			// //l_col_data: PLS-00306: wrong number or types of arguments in
-			// call to 'ORDER_PROCESS_LOOKUP'
-			// cstmt.registerOutParameter(8, Types.OTHER,"SYS.ANYTYPE");
-			// //l_col_data: java.sql.SQLException: Invalid column type: 1111
-			// cstmt.registerOutParameter(8, OracleTypes.OPAQUE,"SYS.ANYTYPE");
-			// //l_col_data: wrong number or types of arguments in call to
-			// 'ORDER_PROCESS_LOOKUP'
-			cstmt.registerOutParameter(2, OracleTypes.ARRAY, "LINES_TABLE"); // l_col_data:
-			cstmt.registerOutParameter(3, OracleTypes.STRUCT, "ADDRESS_OBJ"); // from_address
-			cstmt.registerOutParameter(4, OracleTypes.STRUCT, "ADDRESS_OBJ"); // to_address
+	
+			cstmt.registerOutParameter(2, OracleTypes.ARRAY, "LINES_TABLE"); //LINES_TABLE --> Collection( or table) Oracle custom type, "LINEITEM_OBJECT"
+			cstmt.registerOutParameter(3, OracleTypes.STRUCT, "ADDRESS_OBJ"); //FromAddress: ADDRESS_OBJ --> Oracle custom type
+			cstmt.registerOutParameter(4, OracleTypes.STRUCT, "ADDRESS_OBJ"); //ToAddress: ADDRESS_OBJ --> Oracle custom type
 			cstmt.setLong(5, orderId);
 			cstmt.registerOutParameter(6, Types.CHAR); // message
 
@@ -390,11 +227,10 @@ public class OrderDBHelper implements OrderDBInfc{
 			
 
 			 message = cstmt.getString(6);
-			logger.debug("'Order' error. " + message);
 			
 			if (message != null ) {
-				throw new SQLException( message);
-				
+				logger.debug("'Order' error. " + message);
+				throw new SQLException( message);				
 			}
 			
 			logger.debug("Extracting Line Items.");
@@ -450,7 +286,6 @@ public class OrderDBHelper implements OrderDBInfc{
 			 * attribute); ++idx; } System.out.println(tmp); }
 			 */
 			String instructions = cstmt.getString(1);
-			//Long id = cstmt.getLong(5);
 
 			order.setFrom(fromAddress);
 			order.setTo(toAddress);
@@ -474,8 +309,6 @@ public class OrderDBHelper implements OrderDBInfc{
 			 * System.out.println(td.getTypeName()); } }
 			 */
 
-			 message = cstmt.getString(6);
-			logger.debug("'Order' object constructed with the data.");
 
 		} catch (SQLException | ClassNotFoundException e) {
 			logger.error("ERROR: " , e.getMessage());
@@ -488,83 +321,13 @@ public class OrderDBHelper implements OrderDBInfc{
 				conn.close();
 		}
 
-		logger.debug("done: Order id = " + orderId);
+		logger.debug("done: found Order id = " + orderId);
 
 		// logger.debug(order.toString());
 
 		return order;
 
 	}
-
-	private Long dataInsertWorkBkUp(Order order) throws SQLException {
-	
-	    Long orderId = 0l;
-	    String message = "";
-	
-	     //URL of Oracle database server
-	     String url = oraUrl; //"jdbc:oracle:thin:@localhost:1521:LOGISTICS"; 
-	
-	     //properties for creating connection to Oracle database
-	     Properties props = new Properties();
-	     props.setProperty("user", oraUser);
-	     props.setProperty("password", oraPwd);
-	
-	     //creating connection to Oracle database using JDBC
-	     Connection conn=null;
-	     CallableStatement cstmt =null;
-	     
-	     /////////////////////////////////////
-	     Object[] personAttribs = new Object[order.getLines().size()];
-	     /////////////////////////////////////
-	     
-		try {
-			//load driver into classpath
-			Class.forName(oraDriver);
-			
-			conn = DriverManager.getConnection(url,props);
-			TypeDescriptor td = null;
-			//StructDescriptor personStructDesc = StructDescriptor.createDescriptor("PERSON_REC", conn);
-			
-	         //creating PreparedStatement object to execute query
-	         //PreparedStatement preStatement = conn.prepareStatement(sql);
-	         cstmt = conn.prepareCall("begin " +  "venu.order_process_proc(:1,:2,:3,:4,:5,:6,:7,:8,:9, :10); end;");
-	
-	         cstmt.registerOutParameter(9, Types.CHAR); //order id 
-	         cstmt.registerOutParameter(10, Types.CHAR); //message
-	
-	         cstmt.setString(1, order.getFrom().getCity());
-	         cstmt.setString(2, order.getFrom().getState());
-	         cstmt.setString(3, order.getFrom().getZip());
-	         cstmt.setString(4, order.getTo().getCity());
-	         cstmt.setString(5, order.getTo().getState());
-	         cstmt.setString(6, order.getTo().getZip());
-	         cstmt.setString(7, buildLineItemsSQL (order.getLines()));
-	         cstmt.setString(8, order.getInstructions());
-	
-	         cstmt.execute();
-	         orderId = cstmt.getLong(9);
-	         message = cstmt.getString(10);
-	         } 
-		catch (SQLException | ClassNotFoundException e) {
-			System.out.println("order not processed in database. " + message);
-			System.out.println(e.getMessage());
-	
-			throw new SQLException("ERROR: " + e.getMessage());
-		} finally{
-			try {
-				if (cstmt !=null) cstmt.close();
-				if (conn !=null) conn.close();
-			} catch (SQLException e) {
-				logger.error(e.getMessage());
-			}
-		}
-		
-	
-	    System.out.println("done: Order id = "+ orderId);
-	    
-	    return orderId;
-	
-	 }
 
 
 }

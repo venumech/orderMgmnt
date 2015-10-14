@@ -154,9 +154,9 @@ public class OrderDao extends JdbcDaoSupport  implements OrderDBInfc {
             super(dataSource, SPROC_NAME);
             //order of these params must match to the stored procedure params order.
             declareParameter(new SqlOutParameter("l_instructions", OracleTypes.VARCHAR));
-            declareParameter(new SqlOutParameter("l_line_items", OracleTypes.ARRAY, "LINES_TABLE"));
-            declareParameter(new SqlOutParameter("l_from_address", OracleTypes.STRUCT,"ADDRESS_OBJ"));
-            declareParameter(new SqlOutParameter("l_to_address", OracleTypes.STRUCT, "ADDRESS_OBJ"));
+            declareParameter(new SqlOutParameter("l_line_items", OracleTypes.ARRAY, "LINES_TABLE")); //LINES_TABLE --> Collection( or table) Oracle custom type, "LINEITEM_OBJECT"
+            declareParameter(new SqlOutParameter("l_from_address", OracleTypes.STRUCT,"ADDRESS_OBJ")); //FromAddress: ADDRESS_OBJ --> Oracle custom type
+            declareParameter(new SqlOutParameter("l_to_address", OracleTypes.STRUCT, "ADDRESS_OBJ"));//ToAddress: ADDRESS_OBJ --> Oracle custom type
             
             declareParameter(new SqlParameter("l_order_id", OracleTypes.INTEGER));
             declareParameter(new SqlInOutParameter("message", OracleTypes.VARCHAR));
@@ -265,16 +265,15 @@ public class OrderDao extends JdbcDaoSupport  implements OrderDBInfc {
 	@Override
 	public Order findById(Long orderId) throws IOException, SQLException, ClassNotFoundException {
 		Order order = null;
+		
 		if (jdbcTemplate == null){
 			System.out.println(" jdbcTemplate NULL +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++========" );
 		}
-		
+		/*
 		int returnval = jdbcTemplate.update("select 1 from dual");
 		System.out.println("returnval ========" + returnval);
-		
+		*/
 		order = new OrderLookUpProcedure(dataSource).retrieveOrder(orderId);
-		//int inst = new OrderLookUpProcedureKup(dataSource).aggregate(10, 1);
-		System.out.println("returnval ========++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + order.getInstructions());
 		return order;
 	}
 
