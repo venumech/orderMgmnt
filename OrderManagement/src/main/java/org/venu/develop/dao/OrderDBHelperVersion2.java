@@ -32,17 +32,19 @@ import oracle.sql.StructDescriptor;
 import oracle.sql.TypeDescriptor;
 
 /**
+ * Version:2
   * Simple Java Program to connect Oracle database by using Oracle JDBC thin driver.
   * Make sure you have Oracle JDBC thin driver in your classpath before running this program.
   * This Version uses a classic style Oracle Stored Procedure
  *  (file: order_save_sp.sql, SP name: ORDER_PROCESS_PROC )
  *   which employs Oracle Collections and custom types  for inserting the data.
  *   To search the database for an order id the below SP is being used.
- *   file: order_lookup.sql, SP name: ORDER_PROCESS_LOOKUP
+ *   file: order_lookup.sql, SP name: ORDER_PROCESS_LOOKUP.
+ *   in the next improved version, 'version.3', data base activity using spring is employed 
   * @author venu
   */
 @Repository("orderDao")
-public class OrderDBHelper implements OrderDBInfc{
+public class OrderDBHelperVersion2 implements OrderDBInfc{
 	 
 	@Value("${oracle.db.driver}")
 	private String oraDriver;
@@ -56,7 +58,7 @@ public class OrderDBHelper implements OrderDBInfc{
 	@Value("${oracle.password}")
 	private String oraPwd;
  
-	private final Logger logger = LoggerFactory.getLogger(OrderDBHelper.class);
+	private final Logger logger = LoggerFactory.getLogger(OrderDBHelperVersion2.class);
 
 	public Order saveId(Order order) throws SQLException{
 
@@ -178,7 +180,7 @@ public class OrderDBHelper implements OrderDBInfc{
 	@SuppressWarnings("deprecation")
 	public Order findById(Long orderId) throws SQLException {
 
-		logger.debug("Entered OrderDBHelper.lookUpDB()");
+		logger.debug("Entered OrderDBHelperVersion2.lookUpDB()");
 		Order order = new Order();
 		String message = "";
 

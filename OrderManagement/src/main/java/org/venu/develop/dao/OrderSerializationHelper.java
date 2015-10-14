@@ -11,6 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.venu.develop.model.Order;
 
+/**
+ * When the data base is not set up, the alternative approach is to save the 
+ * order info into a file after serializing the 'order instance' data.
+ * This is basically useful to test the end to end flow of the application and primarily 
+ * to test the UI.
+ * @author Venu
+ *
+ */
+
 //@Repository("orderDao")
 public class OrderSerializationHelper implements OrderDBInfc{
 
@@ -62,14 +71,13 @@ public class OrderSerializationHelper implements OrderDBInfc{
 			fileIn.close();
 		} catch (IOException e) {
 			String error= "The Order Number, " + orderId + " not Found in the System. " +e.getMessage();
-			System.out.println(error);
+			logger.error(error);
 			throw new IOException(error);
 		} catch (ClassNotFoundException e) {
-			System.out.println("Order class not found");
-			System.out.println(e.getMessage());
+			logger.error("Order class not found");
+			logger.error(e.getMessage());
 
 			throw new ClassNotFoundException(e.getMessage());
-			//e.printStackTrace();
 		}
 		return order;
 	}
@@ -86,16 +94,16 @@ public class OrderSerializationHelper implements OrderDBInfc{
 	public Order saveId(Order order) throws IOException {
 		long orderId =  System.currentTimeMillis(); 
 		order.setId(orderId);
-		logger.debug("dataInsert() is started!");
+		logger.debug("saveId() is started!");
 			try {
 				FileOutputStream fileOut = new FileOutputStream(SERIALIZED_DATA_LOCATION + order.getId()+".ser");
 				ObjectOutputStream out = new ObjectOutputStream(fileOut);
 				out.writeObject(order);
 				out.close();
 				fileOut.close();
-				logger.debug("Serialized data is saved in '" + SERIALIZED_DATA_LOCATION + "'. orderId="+ order.getId()+".ser");
+				logger.debug("Serialized data is saved in '" + SERIALIZED_DATA_LOCATION + "'. file ="+ order.getId()+".ser");
 			} catch (IOException e) {
-				logger.error("ERROR: order not saved. " + e.getMessage());
+				logger.error("ERROR: order file not saved. " + e.getMessage());
 				throw new IOException(e.getMessage());
 			}
 		

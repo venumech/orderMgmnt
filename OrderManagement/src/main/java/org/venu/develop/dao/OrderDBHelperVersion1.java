@@ -29,6 +29,8 @@ import org.venu.develop.model.Order;
  *   which employs 
  *  the dynamic sql execution (not an efficient way!) for inserting the data
  *   and standard SQL to look up the database for a given orderid.
+ *   in the version2, the more efficient approach is employed, where the oracle collections
+ *   and the custom object types are created
  * @author venu
  */
 

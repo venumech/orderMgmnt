@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 import org.venu.develop.dao.OrderDBInfc;
-import org.venu.develop.dao.OrderDao;
+import org.venu.develop.dao.OrderDBHelperVersion3;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
@@ -106,9 +106,9 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 	
 	@Bean
     public OrderDBInfc getOrderDao() {
-		//OrderDao od = new OrderDao();
+		//OrderDBHelperVersion3 od = new OrderDBHelperVersion3();
 		//od.setJdbcTemplate((JdbcTemplate) jdbcOperations());
-        return new OrderDao(dataSource());
+        return new OrderDBHelperVersion3(dataSource());
     }
 	
 	

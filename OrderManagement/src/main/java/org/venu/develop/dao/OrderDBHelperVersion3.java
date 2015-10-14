@@ -39,9 +39,23 @@ import java.math.BigDecimal;
 import oracle.sql.ARRAY;
 import oracle.sql.STRUCT;
 
+/**
+ * Version:3
+ * in this alternative version,  spring is employed for data base activity
+  * Simple Java Program to connect Oracle database by using Oracle JDBC thin driver.
+  * Make sure you have Oracle JDBC thin driver in your classpath before running this program.
+  * This Version uses a classic style Oracle Stored Procedure
+ *  (file: order_save_sp.sql, SP name: ORDER_PROCESS_PROC )
+ *   which employs Oracle Collections and custom types  for inserting the data.
+ *   To search the database for an order id the below SP is being used.
+ *   file: order_lookup.sql, SP name: ORDER_PROCESS_LOOKUP.
+ *   
+  * @author venu
+  */
+
 //@Repository("orderDao")
 @Transactional
-public class OrderDao extends JdbcDaoSupport  implements OrderDBInfc {
+public class OrderDBHelperVersion3 extends JdbcDaoSupport  implements OrderDBInfc {
 
 	private final Logger logger = LoggerFactory.getLogger(OrderProcessServiceImpl.class);
     
@@ -51,9 +65,9 @@ public class OrderDao extends JdbcDaoSupport  implements OrderDBInfc {
 	@Autowired
 	private DriverManagerDataSource dataSource;
     
-	public OrderDao(){}
+	public OrderDBHelperVersion3(){}
 	
-	public OrderDao(DataSource basicDataSource) {
+	public OrderDBHelperVersion3(DataSource basicDataSource) {
 		this.jdbcTemplate = new JdbcTemplate(basicDataSource);
 	}
 
