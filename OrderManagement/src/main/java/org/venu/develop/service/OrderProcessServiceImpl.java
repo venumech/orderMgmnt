@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 	 * 
 	 */
 	@Override
-	public Order saveOrder(MultipartFile mFile) throws IOException, SQLException {
+	public Order saveOrder(MultipartFile mFile) throws IOException, SQLException, XMLStreamException {
 		
 		Order order = orderParser.parse(mFile);
 
@@ -100,7 +102,7 @@ public class OrderProcessServiceImpl implements OrderProcessService {
 		logger.debug("update the json list which is used in the UI for autocomplete ");
 		ListIterator<Long> iter = orderIdList.listIterator(orderIdList.size());
 
-		//update the json list which is used in the UI for autocomplete.
+		//update the json list which will be used in the UI for autocomplete.
 		//This list contains only the latest search orders.
 		while (iter.hasPrevious() && matchedIds.size() < autoCompleteSize) {
 			Long i1 = iter.previous();

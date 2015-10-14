@@ -1,7 +1,7 @@
 package org.venu.develop.model;
 
 public class OrderError {
-	private Boolean error;
+	private Boolean error = false;
 	private String errorMsg;
 	
 	/**

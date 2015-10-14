@@ -20,6 +20,7 @@ import org.venu.develop.model.LineItem;
 import org.venu.develop.model.Order;
 
 /**
+ * Version:1
  * Legacy version.
  * Simple Java Program to connect Oracle database by using Oracle JDBC thin
  * driver. Make sure you have Oracle JDBC thin driver in your classpath before

@@ -33,28 +33,28 @@ public class Order implements Serializable{
 		this.id = id;
 	}
 	/**
-	 * @return the fromAdress
+	 * @return the fromAddress
 	 */
 	public Address getFrom() {
 		return from;
 	}
 	/**
-	 * @param fromAdress the fromAdress to set
+	 * @param fromAddress the fromAddress to set
 	 */
-	public void setFrom(Address fromAdress) {
-		this.from = fromAdress;
+	public void setFrom(Address fromAddress) {
+		this.from = fromAddress;
 	}
 	/**
-	 * @return the toAdress
+	 * @return the toAddress
 	 */
 	public Address getTo() {
 		return to;
 	}
 	/**
-	 * @param toAdress the toAdress to set
+	 * @param toAddress the toAddress to set
 	 */
-	public void setTo(Address toAdress) {
-		this.to = toAdress;
+	public void setTo(Address toAddress) {
+		this.to = toAddress;
 	}
 	/**
 	 * @return the instructions

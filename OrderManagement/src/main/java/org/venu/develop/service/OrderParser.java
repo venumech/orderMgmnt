@@ -31,34 +31,42 @@ import org.venu.develop.model.Address;
 import org.venu.develop.model.LineItem;
 import org.venu.develop.model.Order;
 import org.xml.sax.SAXException;
+/**
+ * Stax parser.
+ * Before parsing the xml validate it.
+ *
+ */
+
 @Component("orderParser")
 public class OrderParser {
+
+	private String xmlString;
+	private final String ORDER_SCHEMA_DOC = "src/main/resources/order.xsd"; //location of the xsd file
+	/*
 	private String xmlString = "<?xml version='1.0'?><order>" + "<from zip='10001' state='NY' city='NEW YORK'/>"
 			+ "<to zip='20001' state='DC' city='WASHINGTON'/>" + "<lines>"
 			+ "<line weight='1000.1' volume='1' hazard='true' product='petrol'/>"
 			+ "<line weight='2000' volume='2' hazard='false' product='water'/>" + "</lines>"
 			+ "<instructions>here be dragons</instructions>" + "</order>";
-
-	public static void main(String[] args) throws IOException {
+	*/
+	public static void main(String[] args) throws IOException, XMLStreamException {
 		OrderParser orderParser = new OrderParser();
 		MultipartFile file = null; //inject the bean param for the file to test
 		orderParser.parse( file );
-
 	}
 	
 	/*
 	 * parse the input xml
-	 * before parsing, we validate the xml to check with if it is complying with the specific xsd.
-	 * we validate the xml only if it is a valid one.
+	 * before parsing,  validate the xml if it is complying with the specific xsd.
+	 * parse the xml only if it is a valid one.
 	 */
 
-	public Order parse(MultipartFile file) throws IOException {
+	public Order parse(MultipartFile file) throws IOException, XMLStreamException {
 
 		boolean bInstructions = false;
 		boolean isValidXML = false;
 		Order order = null;
-		String xmlFileData=null;
-		final String ORDER_SCHEMA_DOC = "src/main/resources/order.xsd";
+		String xmlFileData=null;		
 
 		Address fromAddress = new Address();
 		Address toAddress = new Address();
@@ -71,7 +79,7 @@ public class OrderParser {
 		
 		isValidXML = validateXMLSchema(ORDER_SCHEMA_DOC, xmlString);
 		if (!isValidXML )  {
-			 System.out.println("we are not processinng th XML document. XML does not comply with the schema");
+			 System.out.println("we are unable to process the input document. the input file does not comply with the schema");
 			 return null;
 		}
 		
@@ -90,7 +98,6 @@ public class OrderParser {
 					String qName = startElement.getName().getLocalPart();
 					if (qName.equalsIgnoreCase("order")) {
 						order = new Order();
-						//System.out.println("Start Element : order");
 					}
 					if (qName.equalsIgnoreCase("lines")) {
 						lineItems = new ArrayList<LineItem>();
@@ -131,7 +138,6 @@ public class OrderParser {
 					EndElement endElement = event.asEndElement();
 					if (endElement.getName().getLocalPart().equalsIgnoreCase("line")) {
 						//System.out.println("End Element : line");
-						//System.out.println();
 					}
 					if (endElement.getName().getLocalPart().equalsIgnoreCase("order")) {
 						//System.out.println("End Element : order");
@@ -150,8 +156,10 @@ public class OrderParser {
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			throw new FileNotFoundException (e.getMessage());
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
+			throw new XMLStreamException (e.getMessage());
 		}
 
 		//displayOrder(order);
@@ -226,7 +234,8 @@ public class OrderParser {
 			validator.validate(new StreamSource(in));
 		} catch (IOException | SAXException e) {
 			System.out.println("Exception: " + e.getMessage());
-			throw new IOException(e.getMessage());
+			throw new IOException("we are unable to process the input document. "
+					+ "The input file does not comply with the schema.<br />"+e.getMessage());
 		}
 		return true;
 	}

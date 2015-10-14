@@ -42,19 +42,13 @@ public class OrderController {
 
 	@Autowired
 	private  OrderProcessService orderProcessServiceImpl;
-/*
-	public OrderController(OrderProcessService orderProcessServiceImpl) {
-		this.orderProcessServiceImpl = orderProcessServiceImpl;
-	}
-
-*/
 
     @RequestMapping(value = "/order.do", method = RequestMethod.GET)
     public String index(Model model, WebRequest webRequest) {
     	
     	/* Toggle between "order.jsp" and "orderJQ.jsp"   	 */
     	
-        //return "order"; //UI is Angular enabled
+        //return "order"; //uncomment if UI is Angular enabled
     	return "orderJQ"; //UI is JQuery enabled
     }
     
@@ -97,46 +91,31 @@ public class OrderController {
     public @ResponseBody String searchOrder(@RequestParam("q") String query) {
 
         String jsonObj ="";
-        String errorStr ="";
 		OrderError oError = new OrderError();
-		Boolean isError = false;
         Order order = null;
 		logger.debug("searchOrder() is started!; query=" + query);
 
         Long orderId = null;
         try{
         	orderId = Long.parseLong(query);        	
-        	logger.debug("searchOrder(): orderId =" +orderId); 
+        	logger.debug("searchOrder(): orderId =" +orderId);
 
             //do lookup in service layer
         	order = orderProcessServiceImpl.searchOrder(orderId);
-
         } catch (NumberFormatException e){
-        	isError=true;
-        	errorStr= "'" + query +"', Not a valid Order Id. Please try with a valid number";
-        	oError.setError(isError);
-        	oError.setErrorMsg(errorStr);
+        	setErrorObj(oError, "'" + query +"', Not a valid Order Id." + e.getMessage());
         } catch (SQLException e) {
-        	errorStr= e.getMessage();
-        	isError=true;
-        	oError.setError(isError);
-        	oError.setErrorMsg(errorStr);
+        	setErrorObj(oError, e.getMessage());
 		} catch (IOException e) {
-			isError=true;
-        	errorStr= e.getMessage() ;  
-        	oError.setError(isError);
-        	oError.setErrorMsg(errorStr);
+			setErrorObj(oError, e.getMessage());
 		} catch (ClassNotFoundException e) {
-			isError=true;
-        	errorStr=  e.getMessage();
-        	oError.setError(isError);
-        	oError.setErrorMsg(errorStr);
+        	setErrorObj(oError, e.getMessage());
 		}
 
 
         //for json display
-        if (isError || order == null){
-        	logger.error(errorStr);
+        if (oError.getError() || order == null){
+        	logger.error("order == null "+oError.getErrorMsg());
         	
         	return new Gson().toJson(oError); 
         }
@@ -161,6 +140,11 @@ public class OrderController {
         return matchedIds;
         }
 
-
+    	private OrderError setErrorObj(OrderError oError, String errorMsg){
+    		
+    		oError.setError(true);
+    		oError.setErrorMsg(errorMsg);
+    		return oError;
+    	}
 
 }
