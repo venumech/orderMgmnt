@@ -145,17 +145,41 @@ BEGIN
     EXCEPTION 
     WHEN address_insert_error THEN
              message := 'data could NOT be inserted into ADDRESS. transaction rolled back!';
+      if (UTL_FILE.is_open(fhandle))
+      then 
+              UTL_FILE.PUT_LINE(fhandle, '     '||message);
+              UTL_FILE.fclose(fhandle);
+      end if;             
     WHEN order_insert_error THEN
-         message := 'data could NOT be inserted into Order. transaction rolled back!';                                                                               
+         message := 'data could NOT be inserted into Order. transaction rolled back!'; 
+      if (UTL_FILE.is_open(fhandle))
+      then 
+              UTL_FILE.PUT_LINE(fhandle, '     '||message);
+              UTL_FILE.fclose(fhandle);
+      end if;         
     WHEN LineItems_insert_error THEN
          message := 'data could NOT be inserted into LineItems. transaction rolled back!';                                                                               
-
+      if (UTL_FILE.is_open(fhandle))
+      then 
+              UTL_FILE.PUT_LINE(fhandle, '     '||message);
+              UTL_FILE.fclose(fhandle);
+      end if;
     WHEN NO_DATA_FOUND THEN 
         message := 'A SELECT...INTO did not return any row.!';                                                                               
         dbms_output.put_line (message); 
+      if (UTL_FILE.is_open(fhandle))
+      then 
+              UTL_FILE.PUT_LINE(fhandle, '     '||message);
+              UTL_FILE.fclose(fhandle);
+      end if;
     WHEN OTHERS THEN 
         message := SQLCODE || ': '|| SQLERRM || '. Data Base Error Occured for the Order Id : ' || l_order_id;
         dbms_output.put_line (message); 
+      if (UTL_FILE.is_open(fhandle))
+      then 
+              UTL_FILE.PUT_LINE(fhandle, '     '||message);
+              UTL_FILE.fclose(fhandle);
+      end if;
  END; 
  /
  show errors;           
