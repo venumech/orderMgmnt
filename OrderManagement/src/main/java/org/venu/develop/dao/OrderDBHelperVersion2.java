@@ -107,7 +107,7 @@ public class OrderDBHelperVersion2 implements OrderDBInfc{
 			for (int i = 0; i < lineItemsObj.length; i++) {
 				lineItemsObj[i][0] = order.getLines().get(i).getWeight();
 				lineItemsObj[i][1] = order.getLines().get(i).getVolume();
-				lineItemsObj[i][2] = order.getLines().get(i).getHazard()?'Y':'N';
+				lineItemsObj[i][2] = order.getLines().get(i).getHazard()!=null && order.getLines().get(i).getHazard()?'Y':'N'; //safe null check
 				lineItemsObj[i][3] = order.getLines().get(i).getProduct();
 
 				//arrayObj[i] = new STRUCT(structDescriptor, conn.getMetaData().getConnection(), lineItemsObj[i]);

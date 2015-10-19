@@ -39,7 +39,7 @@ BEGIN
 
     dbms_output.put_line('inserting into the new values into address..');    
                                                                                 
-    -- address_id is a combination of state and zip.                                                                               
+    -- address_id is a combination of state and zip.
     select count(*) into l_row_count                                                
       from ADDRESS                                                                    
      where UPPER(state)=UPPER(l_from_address.state)  and                                          
@@ -56,7 +56,8 @@ BEGIN
         values (l_from_address_id, l_from_address.city, l_from_address.state, l_from_address.zip);             
         commit;                                                                  
      else                                             
-       dbms_output.put_line('from address already exists');                     
+       dbms_output.put_line('from address already exists');
+	 UTL_FILE.PUT_LINE(fhandle, '      ''From'' address already exists. l_to_address_id= '|| l_to_address_id);
      end if;                                                                     
                                                                                 
     -- insert into the Address table for 'TO' fields                                                                                 
@@ -83,7 +84,8 @@ BEGIN
        end if;
        commit;                                                              
     else                                              
-	 dbms_output.put_line('TO address already exists');                            
+	 dbms_output.put_line('TO address already exists');
+	 UTL_FILE.PUT_LINE(fhandle, '      ''To'' address already exists. l_to_address_id= '|| l_to_address_id);
     end if;                                                                     
 
     UTL_FILE.PUT_LINE(fhandle, '      fetching from seq. new Order id, l_order_id= '|| l_order_id);
@@ -93,7 +95,7 @@ BEGIN
     order_id  :=  l_order_id; -- populate in the OUT param
     
     dbms_output.put_line('l_order_id=' || l_order_id);
-    UTL_FILE.PUT_LINE(fhandle, '      fetching from seq. l_order_id= '|| l_order_id);
+    UTL_FILE.PUT_LINE(fhandle, '      fetched from seq. l_order_id= '|| l_order_id);
     UTL_FILE.FFLUSH(fhandle);
     
     -- inserting into table, ORDERS.
@@ -138,6 +140,9 @@ BEGIN
             rollback;
             raise LineItems_insert_error;
     end if;                                                                     
+    
+    
+    UTL_FILE.PUT_LINE(fhandle, '      All insert operations are completed. order_id= '|| l_order_id);
     
     UTL_FILE.fflush(fhandle); 
     UTL_FILE.fclose(fhandle);                                                                              

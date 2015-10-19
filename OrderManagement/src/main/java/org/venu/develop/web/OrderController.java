@@ -48,8 +48,8 @@ public class OrderController {
     	
     	/* Toggle between "order.jsp" and "orderJQ.jsp"   	 */
     	
-        //return "order"; //uncomment if UI is Angular enabled
-    	return "orderJQ"; //UI is JQuery enabled
+        return "order"; //uncomment if UI is Angular enabled
+    	//return "orderJQ"; //UI is JQuery enabled
     }
     
     @RequestMapping(value = "/createOrder.do", method = RequestMethod.POST)
@@ -128,8 +128,8 @@ public class OrderController {
     }
     
     /*
-     * autocomplete feature added.
-     * This is to send the matched order ids to the browser client 
+     * autocomplete feature.
+     * This is to send the matched order ids to the client 
      */
     
     @RequestMapping(value = "/getMatchedIds.do", method = RequestMethod.GET)
