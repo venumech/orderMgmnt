@@ -73,14 +73,26 @@
         var oMyForm = new FormData();
         oMyForm.append("file", file.files[0]);
         $.ajax({
-            url: CONTEXT_PATH + 'createOrder.do',
+            //url: CONTEXT_PATH + 'createOrder.do',
+            url: 'http://localhost:9990/OrderProcessRestService/createOrder/',
             data: oMyForm,
             dataType: 'text',
             processData: false,
             contentType: false,
             type: 'POST',
             success: function (data) {
-                var json_obj = $.parseJSON(data);//parse JSON
+            	
+            	alert(data);
+                var json_obj;
+
+   	      		var objectConstructor = {}.constructor;
+   	      		if( data.constructor === objectConstructor){ //check if the 'data' is a JSON object
+	   	    		alert("json object!");
+   	      			json_obj = data; 
+   	      		} else {
+   	      			alert("not json object!");
+              		json_obj = $.parseJSON(data);//parse the string to JSON	   	    	  
+   	      		}
                 if (json_obj.error){
                 	$('#result').html("<div id='outerBox'> <font color='red'>"+ json_obj.errorMsg + "</font></div");
                 	return;
@@ -98,18 +110,28 @@
         var query = document.getElementById("orderId").value;
         $(document).ready(function () {
             $.ajax({
-                url: CONTEXT_PATH + 'searchOrder.do?q=' + query,
+                //url: CONTEXT_PATH + 'searchOrder.do?q=' + query,
+                url: 'http://localhost:9990/OrderProcessRestService/search/' + query,
                 //beforeSend: function() { $('#wait').show(); },
                 //complete: function() { $('#wait').hide(); },
                 type: 'GET',
                 success: function (data) {
-                //data ='{"id":27336,"from":{"city":"NEW YORK","state":"NY","zip":"10001"},"to":{"city":"WASHINGTON","state":"DC","zip":"20001"},"lines":[{"weight":1000.1,"volume":1.0,"hazard":true,"product":"petrol"},{"weight":2000.0,"volume":2.0,"hazard":false,"product":"water"}],"instructions":"here be dragons"}';
-   				
+                	//data ='{"id":27336,"from":{"city":"NEW YORK","state":"NY","zip":"10001"},"to":{"city":"WASHINGTON","state":"DC","zip":"20001"},"lines":[{"weight":1000.1,"volume":1.0,"hazard":true,"product":"petrol"},{"weight":2000.0,"volume":2.0,"hazard":false,"product":"water"}],"instructions":"here be dragons"}';
+   					
 	   	            var output="";
 
-                    var json_obj = $.parseJSON(data);//parse JSON
-                    if (json_obj.error){
-                    	alert (json_obj.errorMsg);
+	   	      		var objectConstructor = {}.constructor;
+	   	      		var json_obj;
+	   	      		if( data.constructor === objectConstructor){ //check if the 'data' is a JSON object
+	   	      			alert("json object!");
+	   	      			json_obj = data; 
+	   	      		} else {
+	   	      			alert("not json object!");
+                  		json_obj = $.parseJSON(data);//parse the string to JSON	   	    	  
+	   	      		}
+
+	   	      		if (json_obj.hasOwnProperty('error')){
+                    	//alert (json_obj.errorMsg);
                     	$('#result').html("<div id='outerBox'> <font color='red'>"+ json_obj.errorMsg + "</font></div");
                     	return;
                     } else {
@@ -144,7 +166,8 @@
                     prepareList();
                 },
                 error: function (data) {
-                    alert("error: " + data);
+                    //alert("error: " + data.statusText);
+                    $('#result').html("<font color='red'> Error: The requested resource not exists in the system. <b>[Code: "+data.status + "; Reason:"+ data.statusText +"]</b></font>");
                 }
             });
         });
@@ -157,7 +180,8 @@
     $(function() {      
         $("#orderId").autocomplete({
             source: function (request, response) {
-                $.getJSON(CONTEXT_PATH + "getMatchedIds.do", {
+                //$.getJSON(CONTEXT_PATH + "getMatchedIds.do", {
+                $.getJSON("http://localhost:9990/OrderProcessRestService/findMatchedIds.do", {                	
                     term: request.term
                 }, response);
             }
