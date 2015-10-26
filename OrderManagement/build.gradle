@@ -16,7 +16,27 @@ repositories {
        dirs 'lib'
    }
 }
- 
+
+ 		/* NOTE: how to refer local jar references, for ex:ojdbc7.jar */
+ 		/* start: local jar references */
+ 		
+		/* first, install in local maven and then only reference in the pom.xml or gradle script(dt.08/19/2015)
+         *  step-1:   run the below at cmd
+         *       mvn install:install-file -Dfile=src/main/webapp/WEB-INF/lib/ojdbc7.jar  -DgroupId=org.venu.develop.local -DartifactId=ojdbc7  -Dversion=12.1.0 -Dpackaging=jar
+         *  step-2.(a) the above can be referenced in POM.xml as below.
+		 *	<dependency>
+		 *   	<groupId>org.venu.develop.local</groupId>
+		 *   	<artifactId>ojdbc7</artifactId>
+		 *   	<version>12.1.0</version>
+	     *	</dependency>
+	     *
+	     * or, step-2(b) the above installed maven repo can be referenced in gradle as below depending upon the case.
+	     *   compile 'org.venu.develop.local:ojdbc7:12.1.0'
+	     *   OR
+	     *   classpath 'org.venu.develop.local:ojdbc7:12.1.0'
+	     */
+		/* end: local jar references */
+		 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:1.2.6.RELEASE") //spring boot
     compile('org.projectlombok:lombok:1.16.6') // --> work later, 26sep2015
@@ -56,9 +76,9 @@ buildscript {
     classpath 'org.akhikhl.gretty:gretty:+'
     classpath 'com.google.code.gson:gson:2.3.1'
     //classpath "gradle.plugin.net.franz-becker:gradle-lombok:1.16.6" //TODO
-    classpath files('lib/gson-1.4.jar')
-    classpath files('lib/xdb6.jar')
-    classpath files('lib/ojdbc7.jar')
+    classpath 'org.venu.develop.local:ojdbc7:12.1.0' //jar  being picked up from local maven repo     
+    //classpath files('lib/ojdbc7.jar')                //jar being picked up from lib folder of the project
+    
     classpath files('lib/orai18n.jar') 
   }
 }

@@ -1,0 +1,5 @@
+To set up the log_DIR in the oracle for log file creations we need the directory to be created for the purpose of pl/sql logs, if this is not already exists.
+In the sqlplus session, perform the following steps for the user, ‘venu’
+step 1: connect sys/summer2015
+step 2: create directory LOG_DIR='c:\plsql\logs';
+step 3: grant privileges to venu
