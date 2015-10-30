@@ -45,7 +45,7 @@ import oracle.sql.STRUCT;
   * Simple Java Program to connect Oracle database by using Oracle JDBC thin driver.
   * Make sure you have Oracle JDBC thin driver in your classpath before running this program.
   * This Version uses a classic style Oracle Stored Procedure
- *  (file: order_save_sp.sql, SP name: ORDER_PROCESS_PROC )
+ *  (file: order_process_stored_procedure.sql, SP name: ORDER_PROCESS_PROC )
  *   which employs Oracle Collections and custom types  for inserting the data.
  *   To search the database for an order id the below SP is being used.
  *   file: order_lookup.sql, SP name: ORDER_PROCESS_LOOKUP.
@@ -53,7 +53,7 @@ import oracle.sql.STRUCT;
   * @author venu
   */
 
-//@Repository("orderDao")
+@Repository("orderDao")
 @Transactional
 public class OrderDBHelperVersion3 extends JdbcDaoSupport  implements OrderDBInfc {
 
@@ -91,7 +91,7 @@ public class OrderDBHelperVersion3 extends JdbcDaoSupport  implements OrderDBInf
 		
         private static final String SQL = "sysdate";
 
-        private static final String SPROC_NAME = "venu.order_process_proc";
+        private static final String SPROC_NAME = "VENU.ORDER_PROCESS_PACKAGE.SAVE_ORDER_VER_1_SP";
    
         public SaveOrderStoredProcedure(DataSource dataSource) {
             super(dataSource, SPROC_NAME);
@@ -159,7 +159,7 @@ public class OrderDBHelperVersion3 extends JdbcDaoSupport  implements OrderDBInf
         private static final String SQL = "sysdate";
 
         private List<LineItem> orderList = new ArrayList<LineItem>();
-        private static final String SPROC_NAME = "VENU.ORDER_PROCESS_LOOKUP";
+        private static final String SPROC_NAME = "VENU.ORDER_PROCESS_PACKAGE.ORDER_PROCESS_LOOKUP";
 
         private String instructions;
         private String message;

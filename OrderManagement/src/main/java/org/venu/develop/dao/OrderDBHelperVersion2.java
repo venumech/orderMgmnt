@@ -36,14 +36,14 @@ import oracle.sql.TypeDescriptor;
   * Simple Java Program to connect Oracle database by using Oracle JDBC thin driver.
   * Make sure you have Oracle JDBC thin driver in your classpath before running this program.
   * This Version uses a classic style Oracle Stored Procedure
- *  (file: order_save_sp.sql, SP name: ORDER_PROCESS_PROC )
+ *  (file: order_process_stored_procedure.sql, SP name: SAVE_ORDER_SP )
  *   which employs Oracle Collections and custom types  for inserting the data.
  *   To search the database for an order id the below SP is being used.
- *   file: order_lookup.sql, SP name: ORDER_PROCESS_LOOKUP.
+ *   SP name: LOOKUP_ORDER_SP.
  *   in the next improved version, 'version.3', data base activity using spring is employed 
   * @author venu
   */
-@Repository("orderDao")
+//@Repository("orderDao")
 public class OrderDBHelperVersion2 implements OrderDBInfc{
 	 
 	@Value("${oracle.db.driver}")
@@ -132,14 +132,14 @@ public class OrderDBHelperVersion2 implements OrderDBInfc{
 			toAddressObj[2] = order.getTo().getZip();
 			STRUCT toStruct = new STRUCT(toStructDescriptor, conn.getMetaData().getConnection(), toAddressObj);
 
-			cstmt = conn.prepareCall("begin " + "venu.order_process_proc(:1,:2,:3,:4,:5,:6); end;");
+			cstmt = conn.prepareCall("begin " + "venu.ORDER_PROCESS_PACKAGE.SAVE_ORDER_SP(:1,:2,:3,:4,:5,:6); end;");
 
 			cstmt.registerOutParameter(5, Types.CHAR); // order id
 			cstmt.registerOutParameter(6, Types.CHAR); // message
 
-			cstmt.setObject(1, fromStruct, Types.STRUCT);
-			cstmt.setObject(2, toStruct, Types.STRUCT);
-			cstmt.setObject(3, arr, Types.ARRAY);
+			cstmt.setObject(1, fromStruct, Types.STRUCT); //FROM ADDRESS
+			cstmt.setObject(2, toStruct, Types.STRUCT);   //TO ADDRESS
+			cstmt.setObject(3, arr, Types.ARRAY); // LINE_ITEMS
 			cstmt.setString(4, order.getInstructions());
 
 			cstmt.execute();
@@ -214,7 +214,7 @@ public class OrderDBHelperVersion2 implements OrderDBInfc{
 			conn = DriverManager.getConnection(url, props);
 
 			// creating PreparedStatement object to execute query
-			cstmt = conn.prepareCall("begin " + "VENU.ORDER_PROCESS_LOOKUP(:1,:2,:3,:4,:5,:6); end;");
+			cstmt = conn.prepareCall("begin " + "VENU.ORDER_PROCESS_PACKAGE.LOOKUP_ORDER_SP(:1,:2,:3,:4,:5,:6); end;");
 
 			logger.debug("Callable statement prepared.");
 			cstmt.registerOutParameter(1, Types.VARCHAR); // instructions

@@ -26,7 +26,7 @@ import org.venu.develop.model.Order;
  * driver. Make sure you have Oracle JDBC thin driver in your classpath before
  * running this program
  *  This Version uses a legacy style Oracle Stored Procedure
- *  (file: order_save_version1_sp.sql, SP name: ORDER_PROCESS_PROC_OLD )
+ *  (file: order_process_stored_procedure.sql, SP name: SAVE_ORDER_VER_1_SP )
  *   which employs 
  *  the dynamic sql execution (not an efficient way!) for inserting the data
  *   and standard SQL to look up the database for a given orderid.
@@ -232,7 +232,7 @@ public class OrderDBHelperVersion1 implements OrderDBInfc {
 			conn = DriverManager.getConnection(url, props);
 
 			// creating PreparedStatement object to execute query
-			cstmt = conn.prepareCall("begin " + "venu.order_process_proc(:1,:2,:3,:4,:5,:6,:7,:8,:9, :10); end;");
+			cstmt = conn.prepareCall("begin " + "venu.ORDER_PROCESS_PACKAGE.SAVE_ORDER_VER_1_SP(:1,:2,:3,:4,:5,:6,:7,:8,:9, :10); end;");
 
 			cstmt.registerOutParameter(9, Types.CHAR); // order id
 			cstmt.registerOutParameter(10, Types.CHAR); // message
