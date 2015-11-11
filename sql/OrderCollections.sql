@@ -2,9 +2,7 @@
 -- collection objects used in the stored procedures
 drop TYPE LINEITEM_OBJECT force;
 
-drop TYPE LINES_TABLE force; //Collection of 1 or many LineItem_objects
-
-
+drop TYPE LINES_TABLE force; //Collection of one or many LINEITEM_OBJECT s
 
 CREATE OR REPLACE TYPE LINEITEM_OBJECT as object(
     weight   number,
