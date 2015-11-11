@@ -25,8 +25,5 @@ CREATE OR REPLACE TYPE ADDRESS_OBJ as object(
     city  varchar2(100),
     state varchar2(20),
     zip varchar2(20)
-    
 );
 /
-
-
