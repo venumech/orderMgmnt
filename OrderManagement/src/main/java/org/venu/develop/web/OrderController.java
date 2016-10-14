@@ -48,7 +48,7 @@ public class OrderController {
     	
     	/* Toggle between "order.jsp" and "orderJQ.jsp"   	 */
     	
-        return "order"; //uncomment if UI is Angular enabled
+        return "order"; //uncomment if UI is Angular 2.0 enabled
     	//return "orderJQ"; //UI is JQuery enabled
     }
     
