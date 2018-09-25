@@ -97,7 +97,8 @@ buildscript {
 // Don't use Jetty8,  it's only a servlet 3.0+ container, 
 // It will cause "No Spring WebApplicationInitializer types detected on classpath"
 gretty {
-  port = 9999
+  //port = 9999
+  httpPort = 9999 //this is the new property replaces the old one, 'port'
   contextPath = 'venu'
   servletContainer = 'jetty9'    //jetty9
   //servletContainer = 'tomcat7' //tomcat7 or tomcat8
