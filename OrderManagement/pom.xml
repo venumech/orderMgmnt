@@ -120,7 +120,7 @@
     <artifactId>ojdbc7</artifactId>
     <version>12.1.2.0</version>
     <scope>system</scope>
-    <!--<systemPath>${basedir}./src/main/resources/dsm_jar_files/org.openhealthtools.mdht.emf.runtime-1.2.0.201212201425.jar</systemPath> -->
+    <!--<systemPath>${basedir}./src/main/resources/jar_files/pharaphrase.jar</systemPath> -->
     <systemPath>C:/personal videos/assignment/ordermgmnt/spring4MVC/OrderProcessRestfulService/src/main/resources/jar_files/ojdbc7_g.jar</systemPath>
     
   </dependency>
